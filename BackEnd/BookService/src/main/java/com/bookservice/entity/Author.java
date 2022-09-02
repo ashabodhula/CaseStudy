@@ -16,6 +16,20 @@ public class Author {
 	private String name;
 	private String email;
 	private String password;
+     
+	
+
+	public Author(int id, String name, String email, String password) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.password = password;
+	}
+
+	public Author(String email, String password) {
+		// TODO Auto-generated constructor stub
+	}
 
 	public int getId() {
 		return id;

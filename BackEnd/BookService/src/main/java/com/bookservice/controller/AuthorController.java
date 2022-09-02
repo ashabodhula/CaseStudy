@@ -1,6 +1,8 @@
 package com.bookservice.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -19,71 +21,97 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bookservice.entity.Author;
-import com.bookservice.request.LoginRequest;
+
+import com.bookservice.repository.AuthorRepository;
+
 import com.bookservice.service.AuthorService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/")
 public class AuthorController {
 
 	@Autowired
 	AuthorService authorService;
-	
 	@Autowired
-	AuthenticationManager authenticationManager;
+	AuthorRepository authorRepository;
 	
-      @Autowired
-      
+	
 
 	@GetMapping
-	Iterable<Author> getUser() {
+	Iterable<Author> getBooks() {
 		return authorService.getAuthor();
 	}
 
-	@PostMapping
+	@PostMapping // author can create book
 	Author saveAuthor(@Valid @RequestBody Author author) {
 
 		authorService.saveAuthor(author);
 		return author;
 	}
 
-	@PostMapping("/bookId/{bookId}/authorname/{authorname}")
+	@PostMapping("/authorname/{authorname}/bookId/{bookId}")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	ResponseEntity saveUser(@Valid @RequestBody Author author, @PathVariable("bookId") int bookId,
-			@PathVariable("authorname") float authorname) {
+	ResponseEntity saveUser(@Valid @RequestBody Author author, @PathVariable("authorname") float authorname,
+			@PathVariable("bookId") int bookId) {
 		authorService.saveAuthor(author);
 
 		MultiValueMap headers = new LinkedMultiValueMap<String, String>();
 		headers.add("headerfromserver", "success");
 		ResponseEntity responseEntity = new ResponseEntity(author, headers, HttpStatus.CREATED);
 		return responseEntity;
+
 	}
-	/*
-	
-	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+/*
+	@PostMapping("/signup")
+	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-		Authentication authentication = authenticationManager.authenticate(
+		if (authorRepository.existsByEmail(signUpRequest.getEmail())) {
+			return ResponseEntity.badRequest().body(new MessageResponse(" Email is already in use!"));
+		}
+
+		// Create new account
 		
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
+		Author author = new Author(signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 		
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
+		Set<String> strRoles = signUpRequest.getRole();
 
-		return ResponseEntity.ok(new JwtResponse(jwt, 
-												 userDetails.getId(), 
-												 userDetails.getUsername(), 
-												 userDetails.getEmail(), 
-												 roles));*/
+		Set<Role> roles = new HashSet<>();
+
+		if (strRoles == null) {
+			Role authorRole = roleRepository.findByName(Role.ROLE_AUTHOR)
+					.orElseThrow(() -> new RuntimeException("please check your role"));// if this role is not found
+			roles.add(authorRole);
+		} else {
+			strRoles.forEach(role -> {
+				switch (role) {
+				case "reader":
+					Role adminRole = roleRepository.findByName(Role.ROLE_READER)
+							.orElseThrow(() -> new RuntimeException("please check your role."));
+					roles.add(adminRole);
+
+					break;
+				case "admin":
+					Role modRole = roleRepository.findByName(Role.ROLE_ADMIN)
+							.orElseThrow(() -> new RuntimeException("please check your role."));
+					roles.add(modRole);
+
+					break;
+
+				}
+			});
+		}
+
+		
+		authorRepository.save(author);
+
+		return ResponseEntity.ok(new MessageResponse(" Registration successfull"));
+		*/
 	}
+

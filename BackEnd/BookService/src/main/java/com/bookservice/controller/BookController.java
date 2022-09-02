@@ -15,7 +15,7 @@ import com.bookservice.service.BookService;
 
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping("/api/")
 public class BookController {
 	
 	@Autowired
@@ -23,12 +23,12 @@ public class BookController {
 	
 	@GetMapping
 	Iterable<Book> getUser() {
-		return bookService.getBook();
+		return bookService.getBooks();
 	}
 	
 	@PostMapping
-	Book saveUser1(@Valid @RequestBody Book book) {
-		bookService.saveBook(book);
+	Book saveBook(@Valid @RequestBody Book book) {
+		bookService.save(book);
 	return book;
 	}
 
