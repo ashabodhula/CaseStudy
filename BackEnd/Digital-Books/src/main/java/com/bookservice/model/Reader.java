@@ -9,14 +9,20 @@ public class Reader {
 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "readerid")
-	private int id;
+private int id;
+	
 	@Column(name = "username", nullable = false)
 	private String username;
 	@Column(name = "email", unique = true)
 	private String email;
 	@Column(name = "password", nullable = false)
 	private String password;
-
+     @Column (name="paymentid")
+     
+	private String paymentId;
+     
+     private  String role ;
+	
 	public int getId() {
 		return id;
 	}
@@ -24,6 +30,16 @@ public class Reader {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	public String getPaymentId() {
+		return paymentId;
+	}
+
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
+	}
+
+	
 
 	public String getUsername() {
 		return username;
@@ -33,12 +49,21 @@ public class Reader {
 		this.username = username;
 	}
 
-	public String geteMail() {
+	
+	public String getEmail() {
 		return email;
 	}
 
-	public void seteMail(String eMail) {
-		this.email = eMail;
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public String getPassword() {
@@ -49,17 +74,21 @@ public class Reader {
 		this.password = password;
 	}
 
+	
+
 	@Override
 	public String toString() {
-		return "Reader [id=" + id + ", username=" + username + ", eMail=" + email + ", password=" + password + "]";
+		return "Reader [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
+				+ ", paymentId=" + paymentId + "]";
 	}
 
-	public Reader(int id, String username, String eMail, String password) {
+	public Reader(int id, String username, String email, String password, String paymentId) {
 		super();
 		this.id = id;
 		this.username = username;
-		this.email = eMail;
+		this.email = email;
 		this.password = password;
+		this.paymentId = paymentId;
 	}
 
 	public Reader() {

@@ -21,15 +21,15 @@ public class ReaderService {
 		return reader;
 	}
 
-	public Reader fetchUserByEmailAndUserPassword(String mail, String password) {
-		// TODO Auto-generated method stub
-		return readerRepo.findByEmailAndPassword(mail, password);
-
-	}
-
-	public Reader fetchUserByEmail(String email) {
-
-		return readerRepo.findByEmail(email);
-
-	}
+//	public Reader fetchUserByEmailAndUserPassword(String mail, String password) {
+//		// TODO Auto-generated method stub
+//		return readerRepo.findByEmailAndPassword(mail, password);
+//
+//	}
+//
+//	public Reader fetchUserByEmail(String email) {
+//
+//		return readerRepo.findByEmail(email);
+//
+//	}
 }

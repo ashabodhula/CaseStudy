@@ -1,19 +1,29 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BookformComponent } from './bookform/bookform.component';
+import { HttpClientModule } from '@angular/common/http';
+import { SignupComponent } from './signup/signup.component';
+import { ReaderDashboardComponent } from './reader-dashboard/reader-dashboard.component';
+import { LoginComponent } from './login/login.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    BookformComponent
-    
+  
+    SignupComponent,
+       ReaderDashboardComponent,
+       LoginComponent,
+  
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
