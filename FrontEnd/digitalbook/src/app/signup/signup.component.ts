@@ -11,54 +11,66 @@ import { ReaderService } from 'src/service/reader.service';
 })
 export class SignupComponent implements OnInit {
   usernameinvalid:any;
+  signupflag:boolean=true;
   flag:any;
-   r={
-    email: 'abc',
-    username : 'abc1',
-    password :'abc'
-   }
-  email : string = '';
-  username : string = '';
-  password : string = '';
+  reader={
+    username:'',
+    email:'',
+    password:'',
+ 
+  };
+  emailExists:boolean=false;
+  signUpStatus:String='';
+  blankFields={
+    username:'',
+    email:'',
+    password:'',
+    username1:'',
+    email1:''
+  };
 
-  reader : Reader = new Reader();
 
-  constructor( public readerService : ReaderService, private route : Router) { }
+  constructor( public readerService : ReaderService){ }
 
+  registerReader(){
+    console.log('Clicked!');
+    const c =this.readerService.registerReader(this.reader);
+    c.subscribe((response:any)=>{
+      console.log("ab"+response );
+      
+      
+    },(error:any)=>{
+      console.log("test"+JSON.stringify(error));
+      if(error.status===200){
+        this.signUpStatus='Reader Registered!';
+        this.signupflag=false;
+
+      }
+      if(error.error.includes("Username is already taken!")){
+        this.blankFields.username1=error.error;
+        console.log("check"+this.blankFields.username1);
+      }
+      if(error.error.includes("Error: Email is already in use!")){
+        this.blankFields.email1=error.error;
+        console.log("check"+this.blankFields.email1);
+      }
+      if(error.error=='User is present'){
+        this.emailExists=true;
+        this.signUpStatus=error.error;
+      }
+      this.blankFields.username=error.error.username;
+      this.blankFields.email=error.error.email;
+      this.blankFields.password=error.error.password;
+    }
+    )
+  }
   ngOnInit(): void {
-    this.username = '';
-    this.password = '';
-    this.email = '';
+   
   }
 
  
 
-  signup() {
-
-    this.reader.username = this.username;
-    this.reader.password = this.password;
-    this.reader.email = this.email;
-    this.reader.role = 'user';
-
-    //this.readerService.registerReader(this.reader).subscribe(res => {
-      this.readerService.registerReader(this.r).subscribe(res => {
-        
-    }, err => {
-      console.log("RE"+JSON.stringify(err)+err.error.includes("Username"));
-     if(err.error.includes("Username")){
-       console.log("x");
-       this.flag=false;
-       this.usernameinvalid=err.error;
-
-      
-       
-     }
-     
-      console.log(err.error)
-      //alert("Registration failed.");
-      //this.ngOnInit();
-    })
-
+  
   }
 
-}
+

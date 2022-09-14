@@ -16,14 +16,12 @@ import com.bookservice.repository.BookRepository;
 
 @Service
 public class AuthorService {
-	
+
 	@Autowired
 	AuthorRepository authorRepository;
-	
-	@Autowired
-    BookRepository bookRepository;
 
-	
+	@Autowired
+	BookRepository bookRepository;
 
 	public Author saveAuthor(Author author) {
 		// TODO Auto-generated method stub
@@ -31,25 +29,15 @@ public class AuthorService {
 		return author;
 	}
 
-
-
-	public Book saveBook( Book book) {
-		// author can add book
+	public Book createBook(@Valid Book book, int authorId) {
 		authorRepository.save(book);
+		// TODO Auto-generated method stub
 		return book;
 	}
-     
-	
-
 
 //	public List<Book> getBookList() {
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
-
-
-
-
-
 
 }

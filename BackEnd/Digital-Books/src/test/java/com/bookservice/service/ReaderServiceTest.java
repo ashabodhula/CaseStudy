@@ -32,7 +32,7 @@ class ReaderServiceTest {
 		reader.setEmail("asha1@gmail.com");
 		reader.setPassword("asha");
 		reader.setUsername("asha1");
-		reader.setPaymentId("DBPID20221234");
+		//reader.setPaymentId("DBPID20221234");
 		
 		return reader;
 	}

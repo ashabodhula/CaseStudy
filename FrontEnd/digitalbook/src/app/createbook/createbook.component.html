@@ -1,0 +1,44 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Create Book</h2>
+
+<form action="">
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingInput" placeholder="Book Title" name="title" [(ngModel)]="book.title">
+        <label for="floatingInput">Book Title</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingInput" placeholder="Book Author" name="author" [(ngModel)]="book.author">
+        <label for="floatingInput">Book Author</label>
+    </div>
+   
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingInput" placeholder="Book Publisher" name="publisher" [(ngModel)]="book.publisher">
+        <label for="floatingInput">Book Publisher</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="date" class="form-control" id="floatingInput" placeholder="Book Published Date" name="published_date" [(ngModel)]="book.published_date">
+        <label for="floatingInput">Book Published Date</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingInput" placeholder="Book Category" name="category" [(ngModel)]="book.category">
+        <label for="floatingInput">Book Catergory</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingInput" placeholder="Book Category" name="price" [(ngModel)]="book.price">
+        <label for="floatingInput">Book Price </label>
+    </div>
+    <button (click)='createBook()'class ='btn btn-success'>Create Book</button>
+</form> 
+
+<p>If you click the "Create Book" button, the form-data will be sent to create the book.</p>
+
+</body>
+</html>
+
+

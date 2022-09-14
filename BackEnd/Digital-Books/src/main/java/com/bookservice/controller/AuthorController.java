@@ -44,22 +44,14 @@ public class AuthorController {
 	@Autowired
 	BookRepository bookRepository;
 
-	@PostMapping("/author/addbook")
-	Book addBook(@RequestBody @Valid Book book) {
-		// System.out.println("book is added");
-
-		return bookService.addBook(book);
-	}
-
 	@PostMapping(path = "/author/signup")
-	public ResponseEntity registerReader(@RequestBody Author author) {
-//		System.out.println("Registering... User ID : " + user.getUserName());
+	public ResponseEntity registerAuthor(@RequestBody Author author) {
 
 		if (authorRepository.existsByUsername(author.getUsername())) {
 			return ResponseEntity.badRequest().body(" Username is already taken!");
 		}
 
-		if (authorRepository.existsByEmail(author.geteMail())) {
+		if (authorRepository.existsByEmail(author.getEmail())) {
 			return ResponseEntity.badRequest().body("Error: Email is already in use!");
 		}
 
@@ -69,28 +61,61 @@ public class AuthorController {
 	}
 
 	@PostMapping("/author/login")
-	public ResponseEntity<?> loginUser(@RequestBody Author author) throws Exception {
-		String tempEmailId = author.geteMail();
+	public ResponseEntity<?> loginAuthor(@RequestBody Author author) throws Exception {
+		String tempEmailId = author.getEmail();
 		String tempPassword = author.getPassword();
 
 		Optional<Author> authorObj = authorRepository.findByEmailAndPassword(tempEmailId, tempPassword);
 		if (authorObj.isPresent()) {
-			return ResponseEntity.ok(" author Login success");
+			return ResponseEntity.ok("author Login success"+author.getId());
 		}
 
 		return ResponseEntity.badRequest().body("Error: Invalid Credential");
+		
+	}
+ //author should create book
+	
+	
+	@PostMapping("/author/{authorId}/books")
+	public Book createBook(@Valid @RequestBody Book book,@PathVariable int authorId) {
+		
+		book=authorService.createBook(book,authorId);
+		
+		return book;
+		
+	}
+	
+	//author edit the book
+	
+	@PutMapping("/author/{authorid}/books/{bookid}")
+	ResponseEntity<?> updateBook(@Valid @RequestBody Book book,
+			@PathVariable("authorid") int  authorid, 
+			@PathVariable("bookid") int  bookid){		
+		Optional<Author> author= authorRepository.findById(authorid);
+		if(bookRepository.existsById(bookid)) {
+			if(author.isPresent()) {
+				if(author.get().isLoginstatus()) {
+					book.setAuthorid(authorid);
+					book.setId(bookid);
+					bookRepository.save(book);
+					return ResponseEntity.ok("Your book has been updated Successfull");
+				}
+				else {
+					return ResponseEntity.badRequest().body("If you are an  author ,Please Login ");
+				}
+			}
+			else {
+				return ResponseEntity.badRequest().body("No Author Found");
+			}
+		}
+		return new ResponseEntity<>("No book found with given bookid ",HttpStatus.UNAUTHORIZED);
+		
+	}
+	
+	@GetMapping("/books/{authorid}")
+	List<Book> getBooksByAuthorId(@PathVariable("authorid") int authorid) {
+		return bookRepository.findAllByAuthorid(authorid);
 	}
 
-
 	
-//	@PostMapping(path = "/{authorId}/books")
-//	Book createBook(@RequestBody Book book, @PathVariable("authorId") Integer authorId) {
-//		
-//		return bookService.addBook(book, authorId);
-
-	}
-
-	
-
-	
-
+}

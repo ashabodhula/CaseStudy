@@ -1,8 +1,16 @@
 package com.bookservice.model;
 
 import javax.persistence.Column;
-import javax.persistence.*;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
+
+import javax.persistence.*;
+@Setter
+@Getter
 @Entity
 public class Reader {
 	@Id
@@ -17,83 +25,10 @@ private int id;
 	private String email;
 	@Column(name = "password", nullable = false)
 	private String password;
+	//@GeneratedValue(strategy = GenerationType.AUTO)
      @Column (name="paymentid")
-     
-	private String paymentId;
-     
-     private  String role ;
+   private int paymentId;
+     private String myBooks;
+  
 	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getPaymentId() {
-		return paymentId;
-	}
-
-	public void setPaymentId(String paymentId) {
-		this.paymentId = paymentId;
-	}
-
-	
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	
-
-	@Override
-	public String toString() {
-		return "Reader [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
-				+ ", paymentId=" + paymentId + "]";
-	}
-
-	public Reader(int id, String username, String email, String password, String paymentId) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.paymentId = paymentId;
-	}
-
-	public Reader() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 }

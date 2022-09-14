@@ -3,27 +3,29 @@
         <div class="col-md-6">
             <img src="https://cdn.pixabay.com/photo/2016/11/29/06/16/kindle-1867751_960_720.jpg" height="100%" width="100%">
         </div>
-        <div class="col-md-4 mt-3 mb-2">
-            <h3 class="text-success text-center"><b>Welcome to Digital Books!</b></h3>
-
+        <h6 style="color:green">{{readerLoginStatus}} </h6>
+        <div *ngIf="loginflag" class="col-md-4 mt-3 mb-2">
+            <h3 class="text-success text-center"><b>Welcome Back to Digital Books!</b></h3>
+            <h6 style="color:red">{{blankFields.email1}}</h6>
+           
             <form action="" class="mt-5 p-5">
                 <h5 class="text-primary mb-3">Log In </h5>
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" placeholder="Email" name="username" [(ngModel)]="r.email">
+                    <input type="text" class="form-control" id="floatingInput" placeholder="Email" name="username" [(ngModel)]="reader.email">
                     <label for="floatingInput">Email</label>
                 </div>
                 
                   <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" [(ngModel)]="r.password">
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" [(ngModel)]="reader.password">
                     <label for="floatingPassword">Password</label>
                   </div>
                  
                   
                   <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button class="btn btn-outline-success me-md-2" type="button" (click)="login()" >Login </button>
+                    <button class="btn btn-outline-success me-md-2" type="button" (click)='loginReader()' >Login </button>
                   </div>
 
-                  <a routerLink="/login" class="text-primary" style="text-decoration: none;">New Here,Sign Up? </a>
+                  <a routerLink="/signup" class="text-primary" style="text-decoration: none;">New Here,Sign Up? </a>
             </form>
         </div>
         <div class="col-md-2">

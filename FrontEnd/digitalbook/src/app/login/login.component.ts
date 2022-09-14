@@ -10,49 +10,75 @@ import { ReaderService } from 'src/service/reader.service'
 })
 export class LoginComponent implements OnInit {
   usernameinvalid:any;
-  r={
+  loginflag:boolean=true;
+  flag:any;
+reader={
     email: '',
     username : '',
     password :'',
     role:''
    }
-   email : string = '';
-  username : string = '';
-  password : string = '';
+   emailExists:boolean=false;
 
-  reader : Reader = new Reader();
-  constructor(public readerService : ReaderService, private route : Router) { }
+  readerLoginStatus:String='';
+  blankFields={
+    username:'',
+    email:'',
+    password:'',
+    email1:'',
+    password1:''
+  }
+
+  constructor(public readerService : ReaderService, private router : Router) { }
 
   ngOnInit(): void {
    
-    this.password = '';
-    this.email = '';
+  
   }
 
  
-  login(){
-    //this.reader.username = this.username;
-    this.reader.password = this.password;
-    this.reader.email = this.email;
-    this.reader.role = 'user';
+  loginReader(){
+   
+    const c=this.readerService.loginReader(this.reader);
+    c.subscribe((responseBody: any)=>{
+      this.readerLoginStatus="Reader logged In";
+      this.router.navigate(["/authorhome"]);
+     
+      console.log(this.readerLoginStatus);
+    },(error:any)=>{
+      console.log("test"+JSON.stringify(error));
+      if(error.status===200){
+        this.readerLoginStatus='Reader logged In,Please navigate to your home';
+      //  this.router.navigate(["/authorhome"]);
+        this.loginflag=false;
+      }
+      if(error.error.includes("Error: Invalid Credential")){
+        this.blankFields.email1=error.error;
+        console.log("check"+this.blankFields.email1);
+      }
+    
+      
 
-    //this.readerService.registerReader(this.reader).subscribe(res => {
-      this.readerService.loginUser(this.r).subscribe(res => {
-        
-    }, err => {
-      console.log("RE"+JSON.stringify(err));
-     if(err.error.includes("username")){
-       this.usernameinvalid=err.console.error();
-
+      if(error.error=='Invalid Creds'){
+        this.emailExists=true;
+        this.readerLoginStatus=error.error;
+      }
+      this.blankFields.username=error.error.username;
+      this.blankFields.email=error.error.email;
+      this.blankFields.password=error.error.password;
+    });
+  }
+ 
+  onLogout(){
+    console.log('Logged Out!');
+    this.router.navigateByUrl('/');
+  }
       
        
      }
      
-      console.log(err.error)
-      //alert("Registration failed.");
-      //this.ngOnInit();
-    })
+    
 
-  }
-  }
+  
+  
 

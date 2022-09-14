@@ -1,9 +1,12 @@
 package com.bookservice.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,38 +26,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bookservice.model.Author;
 import com.bookservice.model.Book;
+import com.bookservice.model.Category;
 import com.bookservice.model.Reader;
 import com.bookservice.repository.BookRepository;
 import com.bookservice.repository.ReaderRepository;
+import com.bookservice.service.BookService;
 import com.bookservice.service.ReaderService;
 
 import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @RestController
-@CrossOrigin(origins="http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/digitalbooks")
-public class ReaderController
-{
+public class ReaderController {
 	@Autowired
-	ReaderService readerservice;
+	ReaderService readerService;
 	@Autowired
 	ReaderRepository readerRepository;
-     @Autowired
-     BookRepository bookRepository;
-     
-   
-   
-     
-     
-     
-	@PostMapping(path="/reader/signup")
-	public ResponseEntity registerReader(@RequestBody Reader reader)
-	{
+	@Autowired
+	BookRepository bookRepository;
+	@Autowired
+
+	BookService bookService;
+
+	@PostMapping(path = "/reader/signup")
+	public ResponseEntity registerReader(@RequestBody Reader reader) {
 //		System.out.println("Registering... User ID : " + user.getUserName());
-		if(reader.getEmail()==null) {
-		return ResponseEntity.badRequest().body("Please enter valid email to signup");
-		}
-			
 
 		if (readerRepository.existsByUsername(reader.getUsername())) {
 			return ResponseEntity.badRequest().body(" Username is already taken!");
@@ -70,8 +68,7 @@ public class ReaderController
 	}
 
 	@PostMapping("/reader/login")
-	public ResponseEntity<?> loginUser(@RequestBody Reader reader) throws Exception
-	{
+	public ResponseEntity<?> loginReader(@RequestBody Reader reader) throws Exception {
 		String tempEmailId = reader.getEmail();
 		String tempPassword = reader.getPassword();
 
@@ -82,62 +79,72 @@ public class ReaderController
 
 		return ResponseEntity.badRequest().body("Error: Invalid Credential");
 	}
-	
-	  @PostMapping(path="/reader/buybook/{id}")
-	     public ResponseEntity buyBook(@RequestBody Reader reader ,@PathVariable("id") int bookid ) {
-	    	 
-	    	if( bookRepository.existsById(bookid)) {
-	    		
-	    		
-	   String pid="DBPID2020"+(int)(Math.random()*10000);
-	             
-	    		
-	    	reader.setPaymentId(pid);
-	    		
 
-	    		readerRepository.save(reader);
-	    		
-	    		return ResponseEntity.ok("book purchased pid is:"+pid);
-	    	}
-			return ResponseEntity.badRequest().body("no book found to purchase");
-	    	 
-	     }
-	@GetMapping("/searchhbooks")
-		ResponseEntity<?> getBook( @RequestParam(required=false) Optional<String> author,
-				@RequestParam(required=false) Optional<String> category,
-				@RequestParam(required=false) Optional<Integer> price,
-				@RequestParam(required=false) Optional<String> publisher) {
-			Stream<Book> bookstream= bookRepository.findAll().stream();
-			if(author.isPresent() ) {
-				bookstream = bookstream.filter(book -> book.getAuthor().equals(author.get()));
-			}
-			if(category.isPresent()) {
-				bookstream= bookstream.filter(book -> book.getCategory().equals(category.get()));
-			}
-			if(price.isPresent()) {
-				bookstream=bookstream.filter(book ->book.getPrice()==price.get());
-			}
-			if(publisher.isPresent()) {
-				bookstream=bookstream.filter(book -> book.getPublisher().equals(publisher.get()));
-			}
-			List<Book> searchResult=bookstream.collect(Collectors.toList());
-			
-			if(searchResult.size()>0) {
-				return new ResponseEntity<List<Book>>(searchResult, HttpStatus.FOUND);
-			}
-				
-			return new ResponseEntity<String>("NO Books Found",HttpStatus.NOT_FOUND);
-			
-		}
-		
+	@GetMapping("/allbooks")
+	List<Book> getAllBooks() {
+		return bookRepository.findAll();
 	}
 
+	@PostMapping("/books/buy/{id}")
 
+	public ResponseEntity buyBook(@RequestBody Reader reader, @PathVariable("id") int bookid) {
 
+		if (bookRepository.existsById(bookid)) {
 
-	
-	
-	
+			//String pid = "DBPID2020" + (int) (Math.random() * 10000);
 
-	
+//			reader.setPaymentId(pid);
+            reader.setMyBooks("bookid"+bookid);
+            reader.setPaymentId((int) (Math.random() * 10000));
+			readerRepository.save(reader);
 
+			return ResponseEntity.ok("book purchased pid is:" +reader.getPaymentId());
+		}
+		return ResponseEntity.badRequest().body("no book found to purchase");
+
+	}
+
+	@GetMapping("/readers/{emailid}/books")
+	ResponseEntity<?> getPurchasedBooks(@PathVariable("emailid") String emailid) {
+		Optional<Reader> reader = readerRepository.findByEmail(emailid);
+		if (reader.isPresent()) {
+			List<Integer> bookids = new ArrayList<>();
+			String books = reader.get().getMyBooks();
+			if (!books.equals("")) {
+				for (String bookid : books.split(",")) {
+					bookids.add(Integer.parseInt(bookid));
+				}
+				return ResponseEntity.ok(bookRepository.findAllById(bookids));
+			} else {
+				return ResponseEntity.badRequest().body("No Books Purchased");
+			}
+		}
+		return ResponseEntity.badRequest().body("No books Purchased with this email");
+	}
+
+	// reader should search books
+
+	@GetMapping("/books/search")
+	ResponseEntity<?> searchBook(@RequestParam Optional<String> author, @RequestParam Optional<Category> category,
+			@RequestParam Optional<Double> price, @RequestParam Optional<String> publisher) {
+		Stream<Book> stream = bookRepository.findAll().stream();
+		if (author.isPresent()) {
+			stream = stream.filter(book -> book.getAuthor().equals(author.get()));
+		}
+		if (category.isPresent()) {
+			stream = stream.filter(book -> book.getCategory().equals(category.get()));
+		}
+		if (price.isPresent()) {
+			stream = stream.filter(book -> String.valueOf(book.getPrice()).equals(String.valueOf(price.get())));
+		}
+		if (publisher.isPresent()) {
+			stream = stream.filter(book -> book.getPublisher().equalsIgnoreCase(publisher.get()));
+		}
+		List<Book> searchResult = stream.collect(Collectors.toList());
+		if (!searchResult.isEmpty()) {
+			return new ResponseEntity<>(searchResult, HttpStatus.FOUND);
+		}
+		return new ResponseEntity<>("NO Books Found", HttpStatus.NOT_FOUND);
+	}
+
+}

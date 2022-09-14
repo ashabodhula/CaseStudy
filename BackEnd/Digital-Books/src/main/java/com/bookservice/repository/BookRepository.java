@@ -14,6 +14,8 @@ import com.bookservice.model.Book;
 @Repository
 public interface BookRepository extends JpaRepository <Book,Integer>{
 
+	List<Book> findAllByAuthorid(int authorid);
+
 
 	
 	

@@ -10,7 +10,7 @@ public interface ReaderRepository  extends JpaRepository<Reader ,Integer>{
 
 	Optional<Reader> findByEmailAndPassword(String eMail, String password);
 
-	Reader findByEmail(String email);
+	Optional<Reader> findByEmail(String email);
 	
 	Boolean existsByEmail(String eMail);
 
