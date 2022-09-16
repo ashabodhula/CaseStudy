@@ -1,6 +1,7 @@
 package com.bookservice.controller;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -39,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/digitalbooks")
-public class ReaderController {
+public class ReaderController extends BaseController{
 	@Autowired
 	ReaderService readerService;
 	@Autowired
@@ -49,19 +51,22 @@ public class ReaderController {
 	@Autowired
 
 	BookService bookService;
+	 
 
 	@PostMapping(path = "/reader/signup")
 	public ResponseEntity registerReader(@RequestBody Reader reader) {
 //		System.out.println("Registering... User ID : " + user.getUserName());
 
 		if (readerRepository.existsByUsername(reader.getUsername())) {
-			return ResponseEntity.badRequest().body(" Username is already taken!");
+			return ResponseEntity.badRequest().body(" Invalid Username!");
 		}
 
 		if (readerRepository.existsByEmail(reader.getEmail())) {
-			return ResponseEntity.badRequest().body("Error: Email is already in use!");
+			return ResponseEntity.badRequest().body("Invalid Email");
 		}
-
+		String encodedPassword = 
+				  Base64.getEncoder().withoutPadding().encodeToString(reader.getPassword().getBytes());
+		reader.setPassword(encodedPassword);
 		readerRepository.save(reader);
 		return ResponseEntity.ok(" Reader SignUp success");
 
@@ -70,7 +75,13 @@ public class ReaderController {
 	@PostMapping("/reader/login")
 	public ResponseEntity<?> loginReader(@RequestBody Reader reader) throws Exception {
 		String tempEmailId = reader.getEmail();
+		String encodedPassword = 
+				  Base64.getEncoder().encodeToString(reader.getPassword().getBytes());
+		
+		reader.setPassword(encodedPassword);
+		
 		String tempPassword = reader.getPassword();
+		
 
 		Optional<Reader> readerObj = readerRepository.findByEmailAndPassword(tempEmailId, tempPassword);
 		if (readerObj.isPresent()) {
@@ -85,42 +96,43 @@ public class ReaderController {
 		return bookRepository.findAll();
 	}
 
-	@PostMapping("/books/buy/{id}")
-
-	public ResponseEntity buyBook(@RequestBody Reader reader, @PathVariable("id") int bookid) {
-
-		if (bookRepository.existsById(bookid)) {
-
-			//String pid = "DBPID2020" + (int) (Math.random() * 10000);
-
-//			reader.setPaymentId(pid);
-            reader.setMyBooks("bookid"+bookid);
-            reader.setPaymentId((int) (Math.random() * 10000));
-			readerRepository.save(reader);
-
-			return ResponseEntity.ok("book purchased pid is:" +reader.getPaymentId());
-		}
-		return ResponseEntity.badRequest().body("no book found to purchase");
-
-	}
-
-	@GetMapping("/readers/{emailid}/books")
-	ResponseEntity<?> getPurchasedBooks(@PathVariable("emailid") String emailid) {
-		Optional<Reader> reader = readerRepository.findByEmail(emailid);
-		if (reader.isPresent()) {
-			List<Integer> bookids = new ArrayList<>();
-			String books = reader.get().getMyBooks();
-			if (!books.equals("")) {
-				for (String bookid : books.split(",")) {
-					bookids.add(Integer.parseInt(bookid));
-				}
-				return ResponseEntity.ok(bookRepository.findAllById(bookids));
-			} else {
-				return ResponseEntity.badRequest().body("No Books Purchased");
-			}
-		}
-		return ResponseEntity.badRequest().body("No books Purchased with this email");
-	}
+//	@PostMapping("/books/buy/{id}")
+//
+//	public ResponseEntity buyBook(@RequestBody Reader reader, @PathVariable("id") int bookid) {
+//
+//		if (bookRepository.existsById(bookid)) {
+//
+//			//String pid = "DBPID2020" + (int) (Math.random() * 10000);
+//
+////		reader.setPaymentId(pid);
+//            reader.setMyBooks("bookid"+bookid);
+//            reader.setPaymentId((int) (Math.random() * 10000));
+//			readerRepository.save(reader);
+//		
+//
+//			return ResponseEntity.ok("book purchased pid is:" +reader.getPaymentId());
+//		}
+//		return ResponseEntity.badRequest().body("no book found to purchase");
+//
+//	}
+//
+//	@GetMapping("/readers/{emailid}/books")
+//	ResponseEntity<?> getPurchasedBooks(@PathVariable("emailid") String emailid) {
+//		Optional<Reader> reader = readerRepository.findByEmail(emailid);
+//		if (reader.isPresent()) {
+//			List<Integer> bookids = new ArrayList<>();
+//			String books = reader.get().getMyBooks();
+//			if (!books.equals("")) {
+//				for (String bookid : books.split(",")) {
+//					bookids.add(Integer.parseInt(bookid));
+//				}
+//				return ResponseEntity.ok(bookRepository.findAllById(bookids));
+//			} else {
+//				return ResponseEntity.badRequest().body("No Books Purchased");
+//			}
+//		}
+//		return ResponseEntity.badRequest().body("No books Purchased with this email");
+//	}
 
 	// reader should search books
 

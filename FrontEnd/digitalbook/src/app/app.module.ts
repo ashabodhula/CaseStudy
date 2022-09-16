@@ -18,6 +18,7 @@ import { AuthorsignupComponent } from './authorsignup/authorsignup.component';
 
 
 
+
 const routes: Routes = [
   { path: 'authorhome', component: AuthorhomeComponent },
   { path: 'authorlogin', component: AuthorloginComponent},
@@ -25,7 +26,9 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent},
 {path:'authorsignup',component:AuthorsignupComponent},
-{path:'createbook',component:CreatebookComponent}
+{path:'createbook',component:CreatebookComponent},
+
+{path:'getbooks',component:GetbooksComponent}
  
 
 ]
@@ -43,6 +46,7 @@ const routes: Routes = [
     AuthorhomeComponent,
     CreatebookComponent,
     AuthorsignupComponent,
+ 
 
 
 

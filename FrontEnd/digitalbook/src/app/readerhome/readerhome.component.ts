@@ -7,46 +7,35 @@ import { ReaderService } from 'src/service/reader.service';
   styleUrls: ['./readerhome.component.css']
 })
 export class ReaderhomeComponent implements OnInit {
-  searchbookdata={
-    category:"",
-    author:"",
-    price:"",
-    publisher:""
-  }
 
+  book:any=this.readerSerive.book;
+  readerFormFlag=true;
+  buyBookContainerFlag=true;
+  reader={
+    readername:"",
+    readeremail:"",
+    bookid:this.readerSerive.book.id
+  }
+  readerblankResponse:any={
+    readername:"",
+    readeremail:""
+  }
+  bookPurchaseSuccessMessage:any;
+  bookPurchaseFailureMessage:any;
+  
   nobookFoundMessage:any;
   AllBooksOfAuthoId : any;
   authorBooks:any;
   constructor(public readerSerive:ReaderService) { }
   
 
-  searchBooks(){
-    if(this.searchbookdata.author==="" &&
-    this.searchbookdata.category==="" &&
-    this.searchbookdata.price==="" &&
-    this.searchbookdata.publisher===""){
-      alert("Search Fields Cannnot be Blank");
-    }
-    else{
-    const observable= this.readerSerive.searchBooks(this.searchbookdata);
-    observable.subscribe((responseBody:any)=>{
-     },
-    (error:any)=>{
-      if(typeof error.error==='string'){
-        this.nobookFoundMessage=error.error;
-      }
-      else{
-      this.authorBooks=JSON.parse(JSON.stringify(error.error));
-      }
-    });
-  }
-  }
   
+ 
   
   ngOnInit(): void {  
      
   }
 
-   
-
 }
+
+

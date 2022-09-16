@@ -1,32 +1,32 @@
 package com.bookservice.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
-import lombok.Data;
+import javax.validation.constraints.Size;
+
 import lombok.Getter;
 import lombok.Setter;
+
 @Setter
 @Getter
 @Entity
 
 public class Author {
 	@Id
-
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "authorid")
 	private int id;
-	@Column(name = "username", nullable = false)
+	@NotBlank(message = "Author Name cannot be blank")
 	private String username;
-	@Column(name = "email", unique = true)
+	@Email(message = "Please Enter a Valid Email")
+	@NotBlank(message = "Author Email cannot be blank")
 	private String email;
-	@Column(name = "password", nullable = false)
+	@NotBlank(message = "Password cannot be blank")
+	@Size(min = 8, max = 120 ,message ="size should be mininum 0f 8 characters")
 	private String password;
 	private boolean loginstatus;
-	
 }

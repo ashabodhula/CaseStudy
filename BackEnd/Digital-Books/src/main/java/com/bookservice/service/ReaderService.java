@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.bookservice.model.Author;
@@ -18,9 +19,14 @@ public class ReaderService {
 	@Autowired
 	ReaderRepository readerRepo;
 	
+	
+
+	
 
 	public Reader saveReader(Reader reader) {
 		// TODO Auto-generated method stub
+//		String encodedPassword =  passwordEncoder.encode(reader.getPassword());
+//		reader.setPassword(encodedPassword);
 		readerRepo.save(reader);
 		return reader;
 	}

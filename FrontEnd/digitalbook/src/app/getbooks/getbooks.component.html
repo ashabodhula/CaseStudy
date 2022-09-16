@@ -1,1 +1,29 @@
-<p>getbooks works!</p>
+<div class="toolbar">
+
+<div *ngIf="readerService.digitalBooksContainerFlag" id="digitalBooksContainer">
+  <!--<h2>Books Available in Store</h2>-->
+  <div class="rows" >
+  <div id="searchFilters" class="searchfields" >
+   <input list="categories" [(ngModel)]="search.category" placeholder="Enter Book Category" >
+    <datalist id="categories">
+      <option *ngFor="let category of bookcategory" [ngValue]="category">{{category}}</option>
+    </datalist>
+    <input type="text"  [(ngModel)]="search.author" placeholder="Enter Author">
+    <input type="text"  [(ngModel)]="search.price" placeholder="Enter Price">
+    <input type="text"   [(ngModel)]="search.publisher" placeholder="Enter Publisher">
+    <button class="" (click)="searchBooks()">Search Filters</button>
+    </div>
+      <p class="error-messages">{{nobookFoundMessage}}</p>
+      <div *ngFor="let book of Books">
+      <div class="rows" >
+        <img src="assets/book.jpg" alt="book image" width="150" height="150">
+        <div >
+        <h3 style="font-weight:bold;;font-size: small;">{{book.title}}</h3>
+          <span>By  {{book.author}}</span>
+        </div>
+        <button  class="button " (click)="buyBook(book)">Buy Now @Rs.{{book.price}}</button>
+      </div> 
+    </div>
+  </div>
+</div>
+</div>

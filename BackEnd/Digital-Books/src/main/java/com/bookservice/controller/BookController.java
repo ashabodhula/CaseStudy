@@ -29,7 +29,7 @@ import com.bookservice.service.BookService;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/digitalbooks")
-public class BookController {
+public class BookController extends BaseController {
 
 	
 

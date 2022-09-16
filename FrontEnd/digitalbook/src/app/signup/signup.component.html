@@ -1,48 +1,28 @@
-<div  class="container-fluid">
-    <div class="row">
-        <div class="col-md-6">
-            <img src="https://cdn.pixabay.com/photo/2016/11/29/06/16/kindle-1867751_960_720.jpg" height="100%" width="100%">
-        </div>
-        <h6 style="color:green">{{signUpStatus}} </h6>
-        
-        <div  *ngIf ="signupflag" class="col-md-4 mt-3 mb-2">
-            <h3 class="text-success text-center"><b>Welcome to Digital Books!</b></h3>
-            <h6 style="color:red">{{blankFields.username1}}</h6>
-            <h6 style="color:red">{{blankFields.email1}}</h6>
-
-            <form action="" class="mt-5 p-5">
-                <h5 class="text-primary mb-3">Sign up </h5>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" placeholder="Email" name="email" [(ngModel)]="reader.email" required/>
-                    
-                    <label for="floatingInput">Email</label>
-                    <!-- {{}} -->
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username" [(ngModel)]="reader.username" required/>
-                   
-                    <label for="floatingInput">Username</label>
-                   
-             <!-- {{usernameinvalid}}   -->
-                </div>
-                  <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" [(ngModel)]="reader.password"required/>
-                    <h6 style="color:red">{{blankFields.password}}</h6>
-                    <label for="floatingPassword">Password</label>
-                  </div>
-                 
-                  
-                  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button class="btn btn-outline-success me-md-2" type="button" (click)='registerReader()' >Register</button>
-                    
-                    
-               
-                </div>
-
-                  <a routerLink="/login" class="text-primary" style="text-decoration: none;">Log In ? </a>
-            </form>
-        </div>
-        <div class="col-md-2">
+<div class="register-photo">
+    <div class="form-container">
+        <div class="image-holder"></div>
+        <div  class="form">
+            <p class="error-messages">{{failureMessage}}</p>
+            <p class="success-messages">{{successMessage}}</p> 
+            <div *ngIf="signupContainerFlag">
+            <h6 ><strong>Register as a Reader to DigitalBooks</strong> </h6>
+            <div class="form-group"><input [(ngModel)]="reader.username" placeholder=" UserName" class="form-control" type="text" >
+                <p class="error-messages"> {{this.blankFields.username1}}
+                 {{this. signUpuserNameExists}}</p>
+             </div>
+             <div class="form-group "><input [(ngModel)]="reader.email" class="form-control" type="email"  placeholder=" Email Id">
+                 <p class="error-messages">{{this.blankFields.email1}}
+                     {{this.signUpEmailExists}}</p>
+             </div>
+             <div class="form-group "><input [(ngModel)]="reader.password" class="form-control" type="password"  placeholder=" Password">
+                 <p class="error-messages">{{this.blankFields.password}}</p>
+             </div>
+           
+            <div class="form-group">
+                <button (click)="registerReader()" class="btn btn-success button" type="submit">Sign Up</button>
+                
+            <a  routerLink="/login"> Already Registered? Login here.</a>
+            </div>
         </div>
     </div>
 </div>

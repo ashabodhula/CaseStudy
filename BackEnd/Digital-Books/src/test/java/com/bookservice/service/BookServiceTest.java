@@ -27,12 +27,12 @@ class BookServiceTest {
 		book.setAuthorid(1);
 		book.setCategory(Category.FICTION);
 		//book.setCategory("fiction");
-		book.setChapters("12");
+		book.setChapters(12);
 		//book.setImage("null");
-		book.setPrice(200);
-		book.setPublished_date(null);
+		book.setPrice(200.00);
+		book.setPublisheddate(null);
 		book.setPublisher("vintage");
-		book.setStatus(true);
+		book.setBookstatus(true);
 		book.setTitle("kafkaontheshore");
 		return book;
 	}

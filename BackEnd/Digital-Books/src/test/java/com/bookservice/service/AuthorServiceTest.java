@@ -32,12 +32,12 @@ class AuthorServiceTest {
 		book.setAuthorid(1);
 		book.setCategory(Category.FICTION);
 		// book.setCategory("fiction");
-		book.setChapters("12");
+		book.setChapters(12);
 
-		book.setPrice(200);
-		book.setPublished_date(null);
+		book.setPrice(200.00);
+		book.setPublisheddate(null);
 		book.setPublisher("vintage");
-		book.setStatus(true);
+		book.setBookstatus(true);
 		book.setTitle("kafkaontheshore");
 		return book;
 	}
@@ -81,10 +81,10 @@ class AuthorServiceTest {
 		assertEquals(addedbook.getChapters(), book.getChapters());
 
 		assertEquals(addedbook.getPrice(), book.getPrice());
-		assertEquals(addedbook.getPublished_date(), book.getPublished_date());
+		assertEquals(addedbook.getPublisheddate(), book.getPublisheddate());
 		assertEquals(addedbook.getTitle(), book.getTitle());
 		assertEquals(addedbook.getPublisher(), book.getPublisher());
-		assertEquals(addedbook.isStatus(), book.isStatus());
+		assertEquals(addedbook.isBookstatus(), book.isBookstatus());
 
 	}
 

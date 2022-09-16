@@ -2,19 +2,53 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Reader } from 'src/model/reader';
-
+export enum Category{
+  FICTION,
+	FANTASY ,
+	SELFHELP,
+	HEALTHCARE,
+	AUTOBIOGRAPHY
+};
 const URL = "http://localhost:8085/digitalbooks/"
 @Injectable({
   providedIn: 'root'
 })
 export class ReaderService {
-
+  digitalBooksContainerFlag: boolean=true;
+  createbooknavFlag:boolean=false;
+  createBookContainerFlag:boolean=false;
+  authorsignupNavFlag:boolean=true;
+  book:any;
+  authorBooksContainerFlag: boolean=false;
+  editBookContainerFlag:boolean=false;
+  editbooksuccessContainerFlag:boolean=false;
+  updateBookPageFlag:boolean=false;
+  hastoeditbook={
+    id:Number,
+    authorid:String,
+    title:String,
+    category:Category,
+    author:String,
+    price:Number,
+    publisher:String,
+    publisheddate:Date,
+    chapters:Number,
+    active:Boolean,
+  };
  constructor(public http: HttpClient) {
 
   }
+  readBookByPaymentID(reader:any) {
+    return this.http.post(URL + "read/book", reader);
+  }
+
 
   buyBook(reader: any) {
     return this.http.post(URL + "buy/book", reader);
+  }
+
+  getMyBooksByReaderEmail(email:any) {
+    return this.http.get(URL+"readers/"+email+"/books");
   }
   //reader search books
   searchBooks(params: any) {
@@ -47,6 +81,7 @@ export class ReaderService {
   }
 
 
+
   registerAuthor(author: any) {
     return this.http.post(URL + 'author/signup', author);
 
@@ -62,5 +97,8 @@ export class ReaderService {
 
   loginReader(reader: any) {
     return this.http.post(URL + 'reader/login', reader);
+  }
+  signout(authorid: any) {
+    return this.http.post(URL+"author/"+authorid+"/signout",null);
   }
 }

@@ -1,5 +1,6 @@
 package com.bookservice.controller;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bookservice.model.Author;
 import com.bookservice.model.Book;
+
 import com.bookservice.model.Reader;
 import com.bookservice.repository.AuthorRepository;
 import com.bookservice.repository.BookRepository;
@@ -30,7 +32,7 @@ import com.bookservice.service.BookService;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/digitalbooks")
 
-public class AuthorController {
+public class AuthorController extends BaseController {
 
 	@Autowired
 	AuthorService authorService;
@@ -43,18 +45,24 @@ public class AuthorController {
 
 	@Autowired
 	BookRepository bookRepository;
+	
+	
 
 	@PostMapping(path = "/author/signup")
 	public ResponseEntity registerAuthor(@RequestBody Author author) {
+		
 
 		if (authorRepository.existsByUsername(author.getUsername())) {
-			return ResponseEntity.badRequest().body(" Username is already taken!");
+			return ResponseEntity.badRequest().body(" Invalid Username");
 		}
 
 		if (authorRepository.existsByEmail(author.getEmail())) {
-			return ResponseEntity.badRequest().body("Error: Email is already in use!");
+			return ResponseEntity.badRequest().body("Invalid Email");
 		}
-
+		String encodedPassword = 
+				  Base64.getEncoder().encodeToString(author.getPassword().getBytes());
+		author.setPassword(encodedPassword);
+     
 		authorRepository.save(author);
 		return ResponseEntity.ok(" Author SignUp success");
 
@@ -63,14 +71,21 @@ public class AuthorController {
 	@PostMapping("/author/login")
 	public ResponseEntity<?> loginAuthor(@RequestBody Author author) throws Exception {
 		String tempEmailId = author.getEmail();
+		
+		String encodedPassword = 
+				  Base64.getEncoder().encodeToString(author.getPassword().getBytes());
+		
+		author.setPassword(encodedPassword);
 		String tempPassword = author.getPassword();
-
+		
+       
 		Optional<Author> authorObj = authorRepository.findByEmailAndPassword(tempEmailId, tempPassword);
 		if (authorObj.isPresent()) {
-			return ResponseEntity.ok("author Login success"+author.getId());
+			
+			return ResponseEntity.ok("author login success");
 		}
 
-		return ResponseEntity.badRequest().body("Error: Invalid Credential");
+		return ResponseEntity.badRequest().body(" Invalid Credential");
 		
 	}
  //author should create book
@@ -96,6 +111,7 @@ public class AuthorController {
 			if(author.isPresent()) {
 				if(author.get().isLoginstatus()) {
 					book.setAuthorid(authorid);
+					
 					book.setId(bookid);
 					bookRepository.save(book);
 					return ResponseEntity.ok("Your book has been updated Successfull");

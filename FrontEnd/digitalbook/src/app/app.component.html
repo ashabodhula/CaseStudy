@@ -1,60 +1,51 @@
-<html>
-  
-  <body >
-    
-    
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Digital Books</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink ="/login">Reader Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink ="/readerhome">Reader Home</a>
-            </li>
-            
-            <li class="nav-item ">
-              <a class="nav-link " routerLink ="/authorlogin" >
-            Author Login
-              </a>
-              <li class="nav-item">
-                <a class="nav-link" routerLink ="/createbook">Author  Home</a>
-              </li>
-   
-          </ul>
-        </div>
-      </nav>
+<div class="toolbar">
+
+  <h1>Digital Books</h1>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
       
-    <div id="digitalBooksContainer">
-      <h3>New Books available</h3>
-      <div class="row" >
-          <p>{{nobookFoundMessage}}</p>
-          <div *ngFor="let book of Books">
-            <div class="column card" >
-                <div class="column1" style="background-color:rgb(7, 6, 19)">
-                    {{book.title}}<br/><span style="font-size: 20px">{{book.category}}</span>
-                    <br/><span style="font-size: 20px">{{book.publisher}}</span>
-                </div>
-                <h4>{{book.title}}</h4>
-                Author:{{book.author}}<br/>
-                Chapeters : {{book.chapters}}<br/>
-                publisher:{{book.publisher}}<br/>
-               
-            </div> 
-          </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          
+          <li class="nav-item">
+            <a class="nav-link" routerLink="getbooks"> Available Books </a>
+          </li>
+          <li class="nav-item">
+            <a class ="nav-link" routerLink="readerhome"> Reader </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="authorhome"> Author </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Register/Login
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" routerLink="login">Reader</a></li>
+              <li><a class="dropdown-item" routerLink="authorlogin">Author</a></li>
+              <li><hr class="dropdown-divider"></li>
+               </ul>
+          </li>
+          
+        </ul>
+        
       </div>
     </div>
+  </nav> 
+</div>  
 
-    
+<div *ngIf="readerService.createbooknavFlag">
+  <a class="btn btn-light" routerLink="authorhome">My Books</a>
+  <a class="btn btn-light" routerLink="createbook">Create Book</a>
+  <button class="btn btn-light" (click)="signout()">Sign Out</button>
+</div>
 
-<!-- <app-login></app-login>
-<app-signup> </app-signup> -->
+<br/><br/><br/>
+
+
+
 
 <router-outlet></router-outlet>

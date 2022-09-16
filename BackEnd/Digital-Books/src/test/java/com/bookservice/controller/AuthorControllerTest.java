@@ -47,12 +47,12 @@ class AuthorControllerTest {
 		book.setAuthorid(1);
 		book.setCategory(Category.FICTION);
 		// book.setCategory("fiction");
-		book.setChapters("12");
+		book.setChapters(12);
 
-		book.setPrice(200);
-		book.setPublished_date(null);
+		book.setPrice(200.00);
+		book.setPublisheddate(null);
 		book.setPublisher("vintage");
-		book.setStatus(true);
+		book.setBookstatus(true);
 		book.setTitle("kafkaontheshore");
 		return book;
 	}
@@ -73,12 +73,12 @@ class AuthorControllerTest {
 		Author author = sampleAuthor();
 		when(authorRepository.existsByUsername(author.getUsername())).thenReturn(true);
 		assertEquals(authorController.registerAuthor(author),
-				ResponseEntity.badRequest().body(" Username is already taken!"));
+				ResponseEntity.badRequest().body(" Invalid Username"));
 
 		when(authorRepository.existsByUsername(author.getUsername())).thenReturn(false);
 		when(authorRepository.existsByEmail(author.getEmail())).thenReturn(true);
 		assertEquals(authorController.registerAuthor(author),
-				ResponseEntity.badRequest().body("Error: Email is already in use!"));
+				 ResponseEntity.badRequest().body("Invalid Email"));
 
 		when(authorRepository.existsByEmail(author.getEmail())).thenReturn(false);
 		
@@ -92,13 +92,13 @@ class AuthorControllerTest {
 		when(authorRepository.findByEmailAndPassword(author.getEmail(), author.getPassword()))
 				.thenReturn(Optional.ofNullable(author));
 
-		assertEquals(authorController.loginAuthor(author), ResponseEntity.ok(" author Login success"));
+		assertEquals(authorController.loginAuthor(author), ResponseEntity.ok("author login success"));
 
 		when(authorRepository.findByEmailAndPassword(author.getEmail(), author.getPassword()))
 				.thenReturn(Optional.empty());
 
 		assertEquals(authorController.loginAuthor(author),
-				ResponseEntity.badRequest().body("Error: Invalid Credential"));
+				ResponseEntity.badRequest().body(" Invalid Credential"));
 
 	}
 
@@ -128,10 +128,10 @@ class AuthorControllerTest {
 		assertEquals(addedbook.getCategory(), book.getCategory());
 		assertEquals(addedbook.getChapters(), book.getChapters());
         assertEquals(addedbook.getPrice(), book.getPrice());
-		assertEquals(addedbook.getPublished_date(), book.getPublished_date());
+		assertEquals(addedbook.getPublisheddate(), book.getPublisheddate());
 		assertEquals(addedbook.getTitle(), book.getTitle());
 		assertEquals(addedbook.getPublisher(), book.getPublisher());
-		assertEquals(addedbook.isStatus(), book.isStatus());
+		assertEquals(addedbook.isBookstatus(), book.isBookstatus());
 
 	}
 	

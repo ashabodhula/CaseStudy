@@ -9,71 +9,69 @@ import { ReaderService } from 'src/service/reader.service'
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  usernameinvalid:any;
-  loginflag:boolean=true;
   flag:any;
-reader={
-    email: '',
-    username : '',
-    password :'',
-    role:''
-   }
-   emailExists:boolean=false;
-
-  readerLoginStatus:String='';
-  blankFields={
+  reader={
     username:'',
     email:'',
     password:'',
-    email1:'',
-    password1:''
-  }
-
-  constructor(public readerService : ReaderService, private router : Router) { }
-
-  ngOnInit(): void {
-   
-  
-  }
-
  
-  loginReader(){
+  };
+ 
+  blankFields={
+    username1:'',
+    email1:'',
+    password:'',
    
-    const c=this.readerService.loginReader(this.reader);
-    c.subscribe((responseBody: any)=>{
-      this.readerLoginStatus="Reader logged In";
-      this.router.navigate(["/authorhome"]);
-     
-      console.log(this.readerLoginStatus);
-    },(error:any)=>{
-      console.log("test"+JSON.stringify(error));
-      if(error.status===200){
-        this.readerLoginStatus='Reader logged In,Please navigate to your home';
-      //  this.router.navigate(["/authorhome"]);
-        this.loginflag=false;
-      }
-      if(error.error.includes("Error: Invalid Credential")){
-        this.blankFields.email1=error.error;
-        console.log("check"+this.blankFields.email1);
-      }
-    
-      
+  };
+  loginuserNameExists:any;
+  loginEmailExists:any;
+  validCreds:any;
+  loginStatus:any;
+  users:any[]=[];
+  successMessage:any;
+  failureMessage:any;
+  loginContainerFlag:boolean=true;
+  loginflag: boolean=true;
+  emailExists: any;
 
-      if(error.error=='Invalid Creds'){
-        this.emailExists=true;
-        this.readerLoginStatus=error.error;
+  constructor( public readerService : ReaderService){ }
+
+  loginReader(){
+    console.log('Clicked!');
+    const c =this.readerService.loginReader(this.reader);
+    c.subscribe((response:any)=>{
+    
+    this.blankFields.email1=response.email;
+    this.blankFields.password=response.password;
+
+   
+      console.log("ab"+response );
+    },
+    (error:any)=>{
+      console.log(JSON.stringify(error.error));
+      
+      this.loginEmailExists="";
+      
+      console.log("X"+error.error);
+      if(typeof error.error==='string'){
+       
+        if(error.error.includes("Invalid") ){
+          this.loginEmailExists=error.error;
+        }
+        
+       
       }
-      this.blankFields.username=error.error.username;
-      this.blankFields.email=error.error.email;
-      this.blankFields.password=error.error.password;
+      else{
+        this.loginContainerFlag=false;
+        this.successMessage=error.error.text;
+      }
     });
   }
- 
-  onLogout(){
-    console.log('Logged Out!');
-    this.router.navigateByUrl('/');
-  }
-      
+  ngOnInit(): void {
+   
+    
+    
+  }     
        
      }
      
