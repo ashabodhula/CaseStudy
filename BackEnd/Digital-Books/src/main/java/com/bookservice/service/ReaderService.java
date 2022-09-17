@@ -1,15 +1,10 @@
 package com.bookservice.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
-import com.bookservice.model.Author;
-import com.bookservice.model.Book;
 import com.bookservice.model.Reader;
+import com.bookservice.repository.BookRepository;
 import com.bookservice.repository.ReaderRepository;
 
 
@@ -18,6 +13,9 @@ public class ReaderService {
 
 	@Autowired
 	ReaderRepository readerRepo;
+	@Autowired
+	BookRepository bookRepository;
+	
 	
 	
 
@@ -31,6 +29,11 @@ public class ReaderService {
 		return reader;
 	}
 
+
+
+
+
+	
 
 //	public String readBook(String emailId, int readerId) {
 //		// TODO Auto-generated method stub

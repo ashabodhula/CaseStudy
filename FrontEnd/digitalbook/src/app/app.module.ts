@@ -16,6 +16,8 @@ import { CreatebookComponent } from './createbook/createbook.component';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthorsignupComponent } from './authorsignup/authorsignup.component';
 
+import { UpdatebookComponent } from './updatebook/updatebook.component';
+
 
 
 
@@ -46,6 +48,8 @@ const routes: Routes = [
     AuthorhomeComponent,
     CreatebookComponent,
     AuthorsignupComponent,
+ 
+    UpdatebookComponent,
  
 
 

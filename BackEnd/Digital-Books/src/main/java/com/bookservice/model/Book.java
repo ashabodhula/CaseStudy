@@ -46,6 +46,7 @@ public class Book {
 	private int chapters;
 	@NotBlank(message = "Book content cannot be blank")
 	private String content;
+	
 	private boolean bookstatus;
 	
 

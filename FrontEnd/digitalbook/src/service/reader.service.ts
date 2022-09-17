@@ -21,8 +21,9 @@ export class ReaderService {
   book:any;
   authorBooksContainerFlag: boolean=false;
   editBookContainerFlag:boolean=false;
-  editbooksuccessContainerFlag:boolean=false;
+  createbooksuccessContainerFlag:boolean=false;
   updateBookPageFlag:boolean=false;
+  editbooksuccessContainerFlag: boolean=false;
   hastoeditbook={
     id:Number,
     authorid:String,
@@ -33,8 +34,10 @@ export class ReaderService {
     publisher:String,
     publisheddate:Date,
     chapters:Number,
-    active:Boolean,
+    bookstatus:Boolean,
+    content:String
   };
+  
  constructor(public http: HttpClient) {
 
   }
@@ -76,9 +79,12 @@ export class ReaderService {
     return this.http.get(URL + "allbooks");
   }
   //need to write for add book
-  createBook(book: any, authorId: any) {
-    return this.http.post(URL + 'author/' + sessionStorage.getItem("authorid") + '/books', book);
+  createBook(book: any) {
+    return this.http.post(URL+"author/"+sessionStorage.getItem("authorId")+"/books",book);
   }
+  updateBook(book:any){
+    return this.http.put(URL+"author/"+book.authorid+"/books/"+book.id,book);
+ }
 
 
 

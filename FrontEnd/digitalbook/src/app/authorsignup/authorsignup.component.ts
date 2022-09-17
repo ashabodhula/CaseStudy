@@ -70,6 +70,7 @@ export class AuthorsignupComponent implements OnInit {
       else{
         this.signupContainerFlag=false;
         this.successMessage=error.error.text;
+        this.router.navigate(["/authorlogin"]);
       }
     });
   }

@@ -57,7 +57,7 @@ class ReaderControllerTest {
 		book.setCategory(Category.FICTION);
 		// book.setCategory("fiction");
 		book.setChapters(12);
-
+		book.setContent("this book");
 		book.setPrice(200.00);
 		book.setPublisheddate(null);
 		book.setPublisher("vintage");
@@ -72,21 +72,20 @@ class ReaderControllerTest {
 	void testRegisterReader() {
 		Reader reader = sampleReader();
 		when(readerRepository.existsByUsername(reader.getUsername())).thenReturn(true);
-		assertEquals(readerController.registerReader(reader),
-				ResponseEntity.badRequest().body(" Invalid Username!"));
+		assertEquals(readerController.registerReader(reader), ResponseEntity.badRequest().body(" Invalid Username!"));
 
 		when(readerRepository.existsByUsername(reader.getUsername())).thenReturn(false);
 		when(readerRepository.existsByEmail(reader.getEmail())).thenReturn(true);
-		assertEquals(readerController.registerReader(reader),
-				ResponseEntity.badRequest().body("Invalid Email"));
+		assertEquals(readerController.registerReader(reader), ResponseEntity.badRequest().body("Invalid Email"));
 
 		when(readerRepository.existsByEmail(reader.getEmail())).thenReturn(false);
 		;
-		assertEquals(readerController.registerReader(reader), ResponseEntity.ok(" Reader SignUp success"));
+		assertEquals(readerController.registerReader(reader),
+				ResponseEntity.ok(" Reader SignUp success" + reader.getId()));
 	}
 
 	@Test
-	void testLoginUser() throws Exception {
+	void testLoginReader() throws Exception {
 		Reader reader = sampleReader();
 
 		when(readerRepository.findByEmailAndPassword(reader.getEmail(), reader.getPassword()))
@@ -102,20 +101,6 @@ class ReaderControllerTest {
 
 	}
 
-//	@Test
-//	void testBuyBook() {
-//		Reader reader = sampleReader();
-//		Book book = new Book();
-//		when(bookRepository.existsById(book.getId())).thenReturn(true);
-//
-//		//reader.setPaymentId("DBPID2020" + (int) (Math.random() * 10000));
-//
-//		assertEquals(readerRepository.save(reader), ResponseEntity.ok("book purchased pid is" + reader.getPaymentId()));
-//
-//		when(bookRepository.existsById(book.getId())).thenReturn(false);
-//		assertEquals(readerRepository.save(reader), ResponseEntity.badRequest().body("no book found to purchase"));
-//	}
-
 	@Test
 	void testGetAllBooks() {
 		Book book = sampleBook();
@@ -126,27 +111,6 @@ class ReaderControllerTest {
 		assertEquals(readerController.getAllBooks().size(), books.size());
 	}
 
-//	@Test
-//	void testGetPurchasedBooks() {
-//		String emailid = "abc@gmail.com";
-//		Reader reader = sampleReader();
-//		reader.setMyBooks("1,");
-//		Book book = sampleBook();
-//		List<Book> books = new ArrayList<Book>();
-//		books.add(book);
-//		when(readerRepository.findByEmail(emailid)).thenReturn(Optional.ofNullable(reader));
-//		when(bookRepository.findAllById(Arrays.asList(Integer.valueOf(1)))).thenReturn(books);
-//		assertEquals(readerController.getPurchasedBooks(emailid), ResponseEntity.ok(books));
-//		when(bookRepository.findAll()).thenReturn(books);
-//		assertEquals(
-//				readerController.searchBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
-//				new ResponseEntity<String>("NO Books Found", HttpStatus.NOT_FOUND));
-//		when(readerRepository.findByEmail(reader.getEmail())).thenReturn(Optional.empty());
-//		assertEquals(readerController.getPurchasedBooks(reader.getEmail()),
-//				ResponseEntity.badRequest().body("No books Purchased with this email"));
-//
-//	}
-
 	@Test
 	void testSearchBookByEmptyFields() {
 		Book book = sampleBook();
@@ -155,13 +119,7 @@ class ReaderControllerTest {
 		assertEquals(
 				readerController.searchBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
 				new ResponseEntity<String>("NO Books Found", HttpStatus.NOT_FOUND));
-	}
 
-	@Test
-	void testSearchBookNonEmptyFields() {
-		Book book = sampleBook();
-		List<Book> books = new ArrayList<Book>();
-		books.add(book);
 		when(bookRepository.findAll()).thenReturn(books);
 		assertEquals(
 				readerController.searchBook(Optional.ofNullable("author"), Optional.ofNullable(Category.FICTION),

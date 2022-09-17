@@ -1,36 +1,29 @@
 package com.bookservice.controller;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bookservice.model.Author;
 import com.bookservice.model.Book;
 import com.bookservice.model.Category;
+import com.bookservice.model.Payment;
 import com.bookservice.model.Reader;
 import com.bookservice.repository.BookRepository;
+import com.bookservice.repository.PaymentRepository;
 import com.bookservice.repository.ReaderRepository;
 import com.bookservice.service.BookService;
 import com.bookservice.service.ReaderService;
@@ -51,7 +44,39 @@ public class ReaderController extends BaseController{
 	@Autowired
 
 	BookService bookService;
-	 
+	@Autowired
+	PaymentRepository payRepo;
+	
+
+	@PostMapping("/books/buy/{id}")
+
+	public ResponseEntity buyBook(@RequestBody Reader reader, @PathVariable("id") int bookid) {
+		Payment payment = new Payment();
+  
+		if (bookRepository.existsById(bookid)) {
+
+			//String pid = "DBPID2020" + (int) (Math.random() * 10000);
+
+//		reader.setPaymentId(pid);fin
+			if(readerRepository.findByUsernameAndMyBooks(reader.getUsername(), bookid).isPresent())
+			{
+				return ResponseEntity.badRequest().body("Book already purchased");
+			}
+			else {
+				
+            payment.setBookid(bookid);
+            payment.setReaderemail(reader.getEmail());
+            payment.setReaderid(reader.getId());
+            payRepo.save(payment);
+
+			return ResponseEntity.ok("book purchased pid is:" +payment.getPaymentid());
+		}
+			
+		}
+		return ResponseEntity.badRequest().body("no book found to purchase");
+
+	}
+
 
 	@PostMapping(path = "/reader/signup")
 	public ResponseEntity registerReader(@RequestBody Reader reader) {
@@ -68,7 +93,7 @@ public class ReaderController extends BaseController{
 				  Base64.getEncoder().withoutPadding().encodeToString(reader.getPassword().getBytes());
 		reader.setPassword(encodedPassword);
 		readerRepository.save(reader);
-		return ResponseEntity.ok(" Reader SignUp success");
+		return ResponseEntity.ok(" Reader SignUp success"+reader.getId());
 
 	}
 
@@ -96,43 +121,10 @@ public class ReaderController extends BaseController{
 		return bookRepository.findAll();
 	}
 
-//	@PostMapping("/books/buy/{id}")
-//
-//	public ResponseEntity buyBook(@RequestBody Reader reader, @PathVariable("id") int bookid) {
-//
-//		if (bookRepository.existsById(bookid)) {
-//
-//			//String pid = "DBPID2020" + (int) (Math.random() * 10000);
-//
-////		reader.setPaymentId(pid);
-//            reader.setMyBooks("bookid"+bookid);
-//            reader.setPaymentId((int) (Math.random() * 10000));
-//			readerRepository.save(reader);
-//		
-//
-//			return ResponseEntity.ok("book purchased pid is:" +reader.getPaymentId());
-//		}
-//		return ResponseEntity.badRequest().body("no book found to purchase");
-//
-//	}
-//
-//	@GetMapping("/readers/{emailid}/books")
-//	ResponseEntity<?> getPurchasedBooks(@PathVariable("emailid") String emailid) {
-//		Optional<Reader> reader = readerRepository.findByEmail(emailid);
-//		if (reader.isPresent()) {
-//			List<Integer> bookids = new ArrayList<>();
-//			String books = reader.get().getMyBooks();
-//			if (!books.equals("")) {
-//				for (String bookid : books.split(",")) {
-//					bookids.add(Integer.parseInt(bookid));
-//				}
-//				return ResponseEntity.ok(bookRepository.findAllById(bookids));
-//			} else {
-//				return ResponseEntity.badRequest().body("No Books Purchased");
-//			}
-//		}
-//		return ResponseEntity.badRequest().body("No books Purchased with this email");
-//	}
+	
+	
+	
+	
 
 	// reader should search books
 

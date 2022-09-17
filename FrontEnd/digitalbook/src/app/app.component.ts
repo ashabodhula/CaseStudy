@@ -72,7 +72,7 @@ export class AppComponent {
     this.readerService.updateBookPageFlag=false;
     this.readerService.editBookContainerFlag=false;
     this.signoutSuccessMessage="";
-   
+    
     this.readerService.digitalBooksContainerFlag=true; 
     if(sessionStorage.getItem("authorId")!==null){
       this.readerService.authorsignupNavFlag=false;

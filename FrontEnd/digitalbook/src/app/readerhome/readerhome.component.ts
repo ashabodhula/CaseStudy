@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ReaderService } from 'src/service/reader.service';
+import { Router } from '@angular/router';
+import { ReaderService, Category } from 'src/service/reader.service';
 
 @Component({
   selector: 'app-readerhome',
@@ -7,33 +8,25 @@ import { ReaderService } from 'src/service/reader.service';
   styleUrls: ['./readerhome.component.css']
 })
 export class ReaderhomeComponent implements OnInit {
-
-  book:any=this.readerSerive.book;
+  cardnumberblankResponse: string="";
+  constructor(public readerService:ReaderService,public router:Router) { }
+  book:any=this.readerService.book;
   readerFormFlag=true;
   buyBookContainerFlag=true;
+  cardnumber:string="";
   reader={
-    readername:"",
-    readeremail:"",
-    bookid:this.readerSerive.book.id
+    username:"",
+    email:"",
+    bookid:this.readerService.book.id
   }
   readerblankResponse:any={
-    readername:"",
+    readerusername:"",
     readeremail:""
   }
   bookPurchaseSuccessMessage:any;
   bookPurchaseFailureMessage:any;
   
-  nobookFoundMessage:any;
-  AllBooksOfAuthoId : any;
-  authorBooks:any;
-  constructor(public readerSerive:ReaderService) { }
-  
-
-  
- 
-  
-  ngOnInit(): void {  
-     
+  ngOnInit(): void {   
   }
 
 }

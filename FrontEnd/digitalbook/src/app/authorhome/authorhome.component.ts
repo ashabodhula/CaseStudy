@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthorserviceService } from 'src/service/authorservice.service';
+import { ReaderService,Category } from 'src/service/reader.service';
 
 @Component({
   selector: 'app-authorhome',
@@ -25,26 +25,29 @@ export class AuthorhomeComponent implements OnInit {
     publisher:'',
     publisheddate:'',
     chapters:'',
-    active:'',
+    bookstatus:'',
   }
   authorName=sessionStorage.getItem("authorName");
   getmyBooksContainerFlag: boolean=true;
   readcontentbook: any;
   bookcontentFlag: boolean=false;
-  constructor(public userService: AuthorserviceService,public router:Router) { }
+  constructor(public readerService: ReaderService,public router:Router) { }
   readBook(book:any){
-    this.userService.createBookContainerFlag=false;
+    this.readerService.authorBooksContainerFlag=false;
     this.readcontentbook=book;
     this.bookcontentFlag=true;
   }
-  
+  goBack(){
+    this.readerService.authorBooksContainerFlag=true;
+    this.bookcontentFlag=false;
+  }
   editbook(book:any){
-    this.userService.hastoeditbook=book;
+    this.readerService.hastoeditbook=book;
     console.log(JSON.stringify(book));
-    this.userService.createBookContainerFlag=false;
-    this.userService.hastoeditbook=book;
-    this.userService.editBookContainerFlag=true;
-    this.userService.updateBookPageFlag=true;
+    this.readerService.authorBooksContainerFlag=false;
+    this.readerService.hastoeditbook=book;
+    this.readerService.editBookContainerFlag=true;
+    this.readerService.updateBookPageFlag=true;
     this.router.navigate(["/updatebook"]);
   }
 
@@ -56,7 +59,7 @@ export class AuthorhomeComponent implements OnInit {
       alert("Search Fields Cannnot be Blank");
     }
     else{
-    const observable= this.userService.searchBooks(this.searchbookdata);
+    const observable= this.readerService.searchBooks(this.searchbookdata);
     observable.subscribe((responseBody:any)=>{
      },
     (error:any)=>{
@@ -70,9 +73,25 @@ export class AuthorhomeComponent implements OnInit {
   }
   }
   ngOnInit(): void {
-   
+    if(sessionStorage.getItem("authorName")===null){
+     this.router.navigate(["/"]);
+    }
+    else{
+      this.readerService.authorBooksContainerFlag=true;
+      this.readerService.digitalBooksContainerFlag=false;
+      
+      this.readerService.createBookContainerFlag=false;
+      const observable=this.readerService.getbooksByAuthorID();
+      observable.subscribe((responseBody:any)=>{
+        if(responseBody.length===0){
+          this.nobookFoundMessage="No Books in your profile, Please Click on Create Books button and Create your books";
+        }
+        else{
+          this.nobookFoundMessage="";
+          this.authorBooks=responseBody;
+        }
+      });
     }
   }
-
-
+}
 

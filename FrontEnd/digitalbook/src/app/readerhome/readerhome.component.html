@@ -1,1 +1,74 @@
-<p>readerhome works!</p>
+<div *ngIf="buyBookContainerFlag" id="buyBookContainer" class="register-photo">
+  <div class="form-container">
+      <div class="image-holder">
+          <h4>Details of the Book : </h4>
+          <table >
+              <tr>
+                  <td>Book Ttile</td>
+                  <td>:</td>
+                  <td> &nbsp;{{book.title}}</td>
+              </tr>
+              <tr>
+                  <td>Book Author</td>
+                  <td>:</td>
+                  <td>&nbsp;{{book.author}}</td>
+              </tr>
+              <tr>
+                  <td>Book Category</td>
+                  <td>:</td>
+                  <td> &nbsp;{{book.category}}</td>
+              </tr>
+              <tr>
+                  <td>Book Publisher</td>
+                  <td>:</td>
+                  <td> &nbsp;{{book.publisher}}</td>
+              </tr>
+              <tr>
+                  <td>Book Price</td>
+                  <td>:</td>
+                  <td> &nbsp;Rs. {{book.price}}</td>
+              </tr>
+              <tr>
+                  <td>Book Publisheddate</td>
+                  <td>:</td>
+                  <td> {{book.publisheddate}}</td>
+              </tr>
+              <tr>
+                  <td>Book Chapters</td>
+                  <td>:</td>
+                  <td> {{book.chapters}}</td>
+              </tr>
+          </table>
+      </div>
+      <div  id="readerForm" class="form">
+          <p class="success-messages">{{bookPurchaseSuccessMessage}}</p> 
+          <div *ngIf="readerFormFlag" >
+              <h2 class="text-center"><strong>Enter</strong> Details</h2>
+              <p class="text-center error-messages">{{bookPurchaseFailureMessage}}</p>
+              <div class="form-group"><input [(ngModel)]="reader.username" class="form-control" type="text" name="readername" placeholder="Reader User Name">
+                  <p class="error-messages"> {{readerblankResponse.readername}}</p>
+              </div>
+              <div class="form-group "><input [(ngModel)]="reader.email" class="form-control" type="email" name="reader email" placeholder="Reader Email">
+                  <p class="error-messages">{{readerblankResponse.readeremail}}</p>
+              </div>
+              
+              <div class="form-group">
+                  
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- <div *ngIf="readerService.digitalBooksContainerFlag" id="digitalBooksContainer">
+    
+    <div class="rows" >
+    <div id="searchFilters" class="searchfields" >
+     <input list="categories" [(ngModel)]="search.category" placeholder="Enter Book Category" >
+      <datalist id="categories">
+        <option *ngFor="let category of bookcategory" [ngValue]="category">{{category}}</option>
+      </datalist>
+      <input type="text"  [(ngModel)]="search.author" placeholder="Enter Author">
+      <input type="text"  [(ngModel)]="search.price" placeholder="Enter Price">
+      <input type="text"   [(ngModel)]="search.publisher" placeholder="Enter Publisher">
+      <button class="" (click)="searchBooks()">Search Filters</button>
+      </div> -->

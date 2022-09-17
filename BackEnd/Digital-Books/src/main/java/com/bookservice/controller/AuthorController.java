@@ -62,9 +62,9 @@ public class AuthorController extends BaseController {
 		String encodedPassword = 
 				  Base64.getEncoder().encodeToString(author.getPassword().getBytes());
 		author.setPassword(encodedPassword);
-     
+       author.setLoginstatus(true);
 		authorRepository.save(author);
-		return ResponseEntity.ok(" Author SignUp success");
+		return ResponseEntity.ok(" Author SignUp success"+author.getId());
 
 	}
 
@@ -81,25 +81,37 @@ public class AuthorController extends BaseController {
        
 		Optional<Author> authorObj = authorRepository.findByEmailAndPassword(tempEmailId, tempPassword);
 		if (authorObj.isPresent()) {
-			
-			return ResponseEntity.ok("author login success");
+			author.setLoginstatus(true);
+			authorRepository.save(author);
+			return ResponseEntity.ok("author login success"+author.getId());
 		}
 
 		return ResponseEntity.badRequest().body(" Invalid Credential");
-		
+	
 	}
+	
  //author should create book
 	
 	
-	@PostMapping("/author/{authorId}/books")
-	public Book createBook(@Valid @RequestBody Book book,@PathVariable int authorId) {
-		
-		book=authorService.createBook(book,authorId);
-		
-		return book;
-		
+	@PostMapping("/author/{authorid}/books")
+	ResponseEntity<?> createBook(@Valid @RequestBody Book book, @PathVariable("authorid") int authorid) {
+		Optional<Author> author = authorRepository.findById(authorid);
+		if (author.isPresent()) {
+			//add login status
+			if (author.get().isLoginstatus()) {
+				
+				book.setAuthorid(authorid);
+				
+			
+				book.setBookstatus(true);
+				bookRepository.save(book);
+				return ResponseEntity.ok("Book Created Successfully");
+			} else {
+				return ResponseEntity.badRequest().body("Please Login to Create Book");
+			}
+		}
+		return new ResponseEntity<>("Unauthorised to create book", HttpStatus.UNAUTHORIZED);
 	}
-	
 	//author edit the book
 	
 	@PutMapping("/author/{authorid}/books/{bookid}")

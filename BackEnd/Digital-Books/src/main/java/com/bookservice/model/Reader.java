@@ -34,7 +34,7 @@ public class Reader {
 	@Size(min = 8, max = 120, message = "size should be mininum  of 8 characters")
 	private String password;
 	private int paymentId;
-	private String myBooks;
+	private int myBooks;
 
 }
 
