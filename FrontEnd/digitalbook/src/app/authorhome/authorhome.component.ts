@@ -25,7 +25,7 @@ export class AuthorhomeComponent implements OnInit {
     publisher:'',
     publisheddate:'',
     chapters:'',
-    bookstatus:'',
+    active:'',
   }
   authorName=sessionStorage.getItem("authorName");
   getmyBooksContainerFlag: boolean=true;

@@ -1,0 +1,35 @@
+<div *ngIf="getmyBooksContainerFlag">
+    <div id="ReaderDetails">
+      <h2>Know Your Purchased Books Here</h2>
+      <p class="error-messages">{{readerblankResponse}}</p>
+      <p class="error-messages">{{bookUnpurchaseSuccesMessage}}</p>
+      <div id="searchFilters" class="searchbooks row" >
+          <div class="col-sm-3">
+              <input class="form-control" type="email"  [(ngModel)]="reader.email" placeholder="Enter Your Email">
+          </div>
+          <div class="col-sm-3">
+          <input class="form-control" type="text"  [(ngModel)]="reader.paymentid" placeholder="Enter PaymentID (Optional)">
+          </div>
+          <div class="col-sm-3">
+              <button class="form-contol btn btn-secondary" (click)="getmybooks()">Get My Books</button>
+          </div>
+      </div>    
+    </div>
+    <div *ngIf="readerService.thisdigitalBooksContainerFlag" id="digitalBooksContainer">
+        <div class="rows" >
+            <p class="error-messages">{{nobookFoundMessage}}</p>
+            <div *ngFor="let book of readerBooks">
+              <div class="column" >
+                <img src="assets/book{{book.id}}.jpg" alt="book image" width="220" height="220">
+                <div style="text-align: center;font-size: small;">
+                  
+                  <span style="color:#163f68;">By  {{book.author}}</span><br/>
+                  
+                </div>
+              </div> 
+            </div>
+        </div>
+      </div>
+  </div>
+  
+

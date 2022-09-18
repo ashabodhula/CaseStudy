@@ -25,7 +25,7 @@ public class Reader {
 	@Column(name = "readerid")
 	private int id;
 
-	@NotBlank(message = "Reader Name cannot be blank")
+	
 	private String username;
 	@Email(message = "Please Enter a Valid Email")
 	@NotBlank(message = "Reader Email cannot be blank")
@@ -33,8 +33,9 @@ public class Reader {
 	@NotBlank(message = "Password cannot be blank")
 	@Size(min = 8, max = 120, message = "size should be mininum  of 8 characters")
 	private String password;
-	private int paymentId;
-	private int myBooks;
+   private int books;
+   private int paymentid;
+   private boolean loginstatus;
 
 }
 

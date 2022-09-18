@@ -35,7 +35,7 @@ export class SignupComponent implements OnInit {
   signupflag: boolean=true;
   emailExists: any;
 
-  constructor( public readerService : ReaderService){ }
+  constructor( public readerService : ReaderService, public router:Router){ }
 
   registerReader(){
     console.log('Clicked!');
@@ -67,6 +67,7 @@ export class SignupComponent implements OnInit {
       else{
         this.signupContainerFlag=false;
         this.successMessage=error.error.text;
+        this.router.navigate(["/readerbooks"]);
       }
     });
   }

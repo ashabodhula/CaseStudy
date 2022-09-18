@@ -1,10 +1,10 @@
 package com.bookservice.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.bookservice.model.Author;
 import com.bookservice.model.Book;
 import com.bookservice.model.Category;
 import com.bookservice.model.Reader;
-import com.bookservice.repository.AuthorRepository;
 import com.bookservice.repository.BookRepository;
 import com.bookservice.repository.ReaderRepository;
 import com.bookservice.service.BookService;
@@ -45,7 +43,8 @@ class ReaderControllerTest {
 		reader.setEmail("asha1@gmail.com");
 		reader.setPassword("asha");
 		reader.setUsername("asha1");
-
+		reader.setLoginstatus(true);
+        reader.setPaymentid(1);
 		return reader;
 	}
 
@@ -67,12 +66,13 @@ class ReaderControllerTest {
 		return book;
 
 	}
+	
 
 	@Test
 	void testRegisterReader() {
 		Reader reader = sampleReader();
 		when(readerRepository.existsByUsername(reader.getUsername())).thenReturn(true);
-		assertEquals(readerController.registerReader(reader), ResponseEntity.badRequest().body(" Invalid Username!"));
+		assertEquals(readerController.registerReader(reader), ResponseEntity.badRequest().body(" Invalid Username"));
 
 		when(readerRepository.existsByUsername(reader.getUsername())).thenReturn(false);
 		when(readerRepository.existsByEmail(reader.getEmail())).thenReturn(true);
@@ -87,43 +87,95 @@ class ReaderControllerTest {
 	@Test
 	void testLoginReader() throws Exception {
 		Reader reader = sampleReader();
+		Reader reader1 = sampleReader();
+		reader1.setPassword(Base64.getEncoder().encodeToString("asha".getBytes()));
+		when(readerRepository.findByUsername(reader.getUsername())).thenReturn(Optional.ofNullable(reader1));
 
-		when(readerRepository.findByEmailAndPassword(reader.getEmail(), reader.getPassword()))
-				.thenReturn(Optional.ofNullable(reader));
+		assertEquals(readerController.loginReader(reader), ResponseEntity.ok("Reader Login Success" + reader.getId()));
 
-		assertEquals(readerController.loginReader(reader), ResponseEntity.ok(" reader Login success"));
+		when(readerRepository.findByUsername(reader.getUsername())).thenReturn(Optional.empty());
 
-		when(readerRepository.findByEmailAndPassword(reader.getEmail(), reader.getPassword()))
-				.thenReturn(Optional.empty());
+		assertEquals(readerController.loginReader(reader), ResponseEntity.badRequest().body("Invalid Credential"));
 
-		assertEquals(readerController.loginReader(reader),
-				ResponseEntity.badRequest().body("Error: Invalid Credential"));
+		when(readerRepository.findByUsername(reader.getUsername())).thenReturn(Optional.ofNullable(reader));
+		assertEquals(readerController.loginReader(reader), ResponseEntity.badRequest().body("Invalid Credential"));
 
 	}
 
+	
+	
+	
+	@Test
+	 void testBuyBook() {
+		Book book = sampleBook();
+		Reader reader = sampleReader();
+		when(bookRepository.existsById(book.getId())).thenReturn(true);
+		when(readerRepository.findByUsernameAndBooks(reader.getUsername(), book.getId())).thenReturn(Optional.ofNullable(reader));
+		assertEquals(readerController.buyBook(reader, book.getId()), ResponseEntity.badRequest().body("Book already purchased"));
+		
+		when(readerRepository.findByUsernameAndBooks(reader.getUsername(), book.getId())).thenReturn(Optional.empty());
+		assertEquals(readerController.buyBook(reader, book.getId()),ResponseEntity.ok("Book purchased successfully, your paymentId is:" +reader.getPaymentid()));
+		
+		when(bookRepository.existsById(book.getId())).thenReturn(false);
+//		when(readerRepository.findByUsernameAndBooks(reader.getUsername(), book.getId())).thenReturn(Optional.ofNullable(reader));
+		assertEquals(readerController.buyBook(reader, book.getId()),ResponseEntity.badRequest().body("No book found to purchase"));
+		
+		
+	}
+	
+	@Test
+	void testReadBookContent() {
+		Book book = sampleBook();
+		Reader reader = sampleReader();
+		when(readerRepository.findByEmailAndBooks(reader.getEmail(), reader.getBooks())).thenReturn(Optional.empty());
+		assertEquals(readerController.readBookContent(reader.getEmail(), reader.getBooks()),ResponseEntity.badRequest().body("Invalid Email / Book"));
+		
+		when(readerRepository.findByEmailAndBooks(reader.getEmail(), reader.getBooks())).thenReturn(Optional.ofNullable(reader));
+		when(bookRepository.findById(reader.getBooks())).thenReturn(Optional.ofNullable(book));
+		assertEquals(readerController.readBookContent(reader.getEmail(),reader.getBooks()),ResponseEntity.ok(Optional.ofNullable(book)));
+	}
+	
+	@Test
+	void testGetRefundByBookId() {
+		Book book = sampleBook();
+		Reader reader = sampleReader();
+		when(readerRepository.findByEmailAndBooks(reader.getEmail(),reader.getBooks())).thenReturn(Optional.ofNullable(reader));
+		assertEquals(readerController.getRefundBookByBookId(reader.getEmail(), reader.getBooks()),new ResponseEntity<String>("Your refund will be credited shortly",HttpStatus.OK));
+		
+		when(readerRepository.findByEmailAndBooks(reader.getEmail(),reader.getBooks())).thenReturn(Optional.empty());
+		assertEquals(readerController.getRefundBookByBookId(reader.getEmail(),reader.getBooks()),new ResponseEntity<>("Invalid Email / BookId",HttpStatus.NOT_FOUND));
+	}
+	
+
+	
 	@Test
 	void testGetAllBooks() {
 		Book book = sampleBook();
 		List<Book> books = new ArrayList<Book>();
-		books.add(book);
+		
 		books.add(book);
 		when(bookRepository.findAll()).thenReturn(books);
 		assertEquals(readerController.getAllBooks().size(), books.size());
 	}
 
+	
+	
 	@Test
 	void testSearchBookByEmptyFields() {
-		Book book = sampleBook();
+		
 		List<Book> books = new ArrayList<Book>();
 		when(bookRepository.findAll()).thenReturn(books);
-		assertEquals(
-				readerController.searchBook(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
-				new ResponseEntity<String>("NO Books Found", HttpStatus.NOT_FOUND));
-
+		assertEquals(readerController.searchBook( Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty()),
+				new ResponseEntity<String>("NO Books Found",HttpStatus.NOT_FOUND));
+	}
+	
+	@Test
+	void testSearchBookNonEmptyFields() {
+		List<Book> books = new ArrayList<Book>();
+		Book book = sampleBook();
+		books.add(book);
 		when(bookRepository.findAll()).thenReturn(books);
-		assertEquals(
-				readerController.searchBook(Optional.ofNullable("author"), Optional.ofNullable(Category.FICTION),
-						Optional.of(Double.valueOf(500.00)), Optional.ofNullable("publisher")),
+		assertEquals(readerController.searchBook( Optional.ofNullable("asha"),Optional.ofNullable(Category.FICTION),Optional.of(Double.valueOf(200.00)),Optional.ofNullable("vintage")),
 				new ResponseEntity<List<Book>>(books, HttpStatus.FOUND));
 	}
 

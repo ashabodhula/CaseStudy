@@ -64,8 +64,9 @@ class AuthorControllerTest {
 		Author author = new Author();
 		author.setId(1);
 		author.setEmail("asha1@gmail.com");
-		author.setPassword(encoder.encodeToString("abc".getBytes()));
+		//author.setPassword(encoder.encodeToString("abc".getBytes()));
 		author.setUsername("asha1");
+		author.setPassword("abc");
 
 		return author;
 
@@ -91,19 +92,27 @@ class AuthorControllerTest {
 	@Test
 	void testLoginAuthor() throws Exception {
 		Author author = sampleAuthor();
+		Author author1 = sampleAuthor();
+ author1.setPassword(Base64.getEncoder().encodeToString("abc".getBytes()));
+		when(authorRepository.findByUsername(author.getUsername()))
+				.thenReturn(Optional.ofNullable(author1));
 
-		when(authorRepository.findByEmailAndPassword(author.getEmail(), author.getPassword()))
-				.thenReturn(Optional.ofNullable(author));
+		assertEquals(authorController.loginAuthor(author), ResponseEntity.ok("Author Login Success"+author.getId()));
 
-		assertEquals(authorController.loginAuthor(author), ResponseEntity.ok("author login success"+author.getId()));
-
-		when(authorRepository.findByEmailAndPassword(author.getEmail(), author.getPassword()))
+		when(authorRepository.findByUsername(author.getUsername()))
 				.thenReturn(Optional.empty());
 
 		assertEquals(authorController.loginAuthor(author),
-				ResponseEntity.badRequest().body(" Invalid Credential"));
+				ResponseEntity.badRequest().body("Invalid Credential"));
+		
+		when(authorRepository.findByUsername(author.getUsername()))
+		.thenReturn(Optional.ofNullable(author));
+		assertEquals(authorController.loginAuthor(author),
+				ResponseEntity.badRequest().body("Invalid Credential"));
 
 	}
+	
+	
 
 	@Test
 	void testGetBooksByAuthorId() {
@@ -111,7 +120,7 @@ class AuthorControllerTest {
 		Author author = sampleAuthor();
 		List<Book> books = new ArrayList<Book>();
 
-		books.add(book);
+	
 		books.add(book);
 		when(bookRepository.findAllByAuthorid(author.getId())).thenReturn(books) ;
 		assertEquals(authorController.getBooksByAuthorId(author.getId()).size(),books.size());
@@ -126,8 +135,9 @@ class AuthorControllerTest {
 		assertEquals(authorController.createBook(book, author.getId()),ResponseEntity.ok("Book Created Successfully"));
 	}
 	
+	//fail cases
 	@Test
-	void testCreateBookFailByNotLoggedIn() {
+	void testCreateBookNotLoggedIn() {
 		Author author = sampleAuthor();
 		Book book =sampleBook();
 		author.setLoginstatus(false);
@@ -136,7 +146,7 @@ class AuthorControllerTest {
 	}
 	
 	@Test
-	void testCreateBookFailByInvalidAuthor() {
+	void testCreateBooknoAuthor() {
 		Author author = sampleAuthor();
 		Book book =sampleBook();
 		when(authorRepository.findById(author.getId())).thenReturn(Optional.empty());
@@ -147,30 +157,42 @@ class AuthorControllerTest {
 	
 	
 	
-	
-	@Test
-	void testUpdateBook() {
-		Author author = sampleAuthor();
-		Book book =sampleBook();
-		author.setLoginstatus(true);
-		when(authorRepository.findById(author.getId())).thenReturn(Optional.ofNullable(author));
-		when(bookRepository.existsById(book.getId())).thenReturn(true);
-		assertEquals(authorController.updateBook(book, author.getId(), book.getId()),ResponseEntity.ok("Book Update Successfull"));
-		
-		when(authorRepository.findById(author.getId())).thenReturn(Optional.ofNullable(author));
-		when(bookRepository.existsById(book.getId())).thenReturn(true);
-		assertEquals(authorController.updateBook(book, author.getId(), book.getId()),ResponseEntity.badRequest().body("Please Login to Update Book"));
-		
-		
-		when(authorRepository.findById(author.getId())).thenReturn(Optional.ofNullable(author));
-		when(bookRepository.existsById(book.getId())).thenReturn(true);
-		assertEquals(authorController.updateBook(book, author.getId(), book.getId()),ResponseEntity.badRequest().body("Please Login to Update Book"));
 
-		when(bookRepository.existsById(book.getId())).thenReturn(false);
-		assertEquals(authorController.updateBook(book, author.getId(), book.getId()),new ResponseEntity<String>("No book found to Update",HttpStatus.UNAUTHORIZED));
+	Author author = sampleAuthor();
+	Book book =sampleBook();
+		@Test
+		void testUpdateBookSuccess() {
+			author.setLoginstatus(true);
+			when(authorRepository.findById(author.getId())).thenReturn(Optional.ofNullable(author));
+			when(bookRepository.existsById(book.getId())).thenReturn(true);
+			assertEquals(authorController.updateBook(book, author.getId(), book.getId()),ResponseEntity.ok("Your book has been updated Successfully"));
+		}
+		
+		@Test
+		void testUpdateBookFailByNotLoggedIn() {
+			author.setLoginstatus(false);
+			when(authorRepository.findById(author.getId())).thenReturn(Optional.ofNullable(author));
+			when(bookRepository.existsById(book.getId())).thenReturn(true);
+			assertEquals(authorController.updateBook(book, author.getId(), book.getId()),ResponseEntity.badRequest().body("If you are an  author ,Please Login"));
+		}
+		
+		@Test
+		void testUpdateBookFailByInvalidAuthor() {
+			author.setLoginstatus(false);
+			when(authorRepository.findById(author.getId())).thenReturn(Optional.empty());
+			when(bookRepository.existsById(book.getId())).thenReturn(true);
+			assertEquals(authorController.updateBook(book, author.getId(), book.getId()),ResponseEntity.badRequest().body("No Author Found"));
+		}
+		
+		@Test
+		void testUpdateBookFailByInvalidBook() {
+			when(bookRepository.existsById(book.getId())).thenReturn(false);
+			assertEquals(authorController.updateBook(book, author.getId(), book.getId()),new ResponseEntity<String>("No book found with given bookid",HttpStatus.UNAUTHORIZED));
+		}
+		
 
 	}
 	
 	
 	
-}
+

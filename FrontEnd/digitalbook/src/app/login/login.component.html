@@ -11,9 +11,12 @@
                <p class="error-messages">{{this.blankFields.email1}}
                    {{this.loginEmailExists}}</p>
            </div>
-           <div class="form-group "><input [(ngModel)]="reader.password" class="form-control" type="password"  placeholder=" Password">
-               <p class="error-messages">{{this.blankFields.password}}</p>
+           <div class="form-group "><input [(ngModel)]="reader.username" class="form-control" type="username"  placeholder=" Username">
+               <p class="error-messages">{{this.blankFields.username1}}</p>
            </div>
+           <div class="form-group "><input [(ngModel)]="reader.password" class="form-control" type="password"  placeholder=" Password">
+            <p class="error-messages">{{this.blankFields.password}}</p>
+        </div>
          
           <div class="form-group">
               <button (click)="loginReader()" class="btn btn-success button" type="submit">Sign Up</button>

@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bookservice.model.Book;
 import com.bookservice.model.Category;
-import com.bookservice.model.Payment;
+
 import com.bookservice.model.Reader;
 import com.bookservice.repository.BookRepository;
-import com.bookservice.repository.PaymentRepository;
+
 import com.bookservice.repository.ReaderRepository;
 import com.bookservice.service.BookService;
 import com.bookservice.service.ReaderService;
@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/digitalbooks")
-public class ReaderController extends BaseController{
+public class ReaderController extends BaseController {
 	@Autowired
 	ReaderService readerService;
 	@Autowired
@@ -44,54 +44,55 @@ public class ReaderController extends BaseController{
 	@Autowired
 
 	BookService bookService;
-	@Autowired
-	PaymentRepository payRepo;
-	
 
 	@PostMapping("/books/buy/{id}")
 
 	public ResponseEntity buyBook(@RequestBody Reader reader, @PathVariable("id") int bookid) {
-		Payment payment = new Payment();
-  
+
 		if (bookRepository.existsById(bookid)) {
 
-			//String pid = "DBPID2020" + (int) (Math.random() * 10000);
+			Optional<Reader> reader1 = readerRepository.findByUsernameAndBooks(reader.getUsername(), bookid);
+			if (reader1.isPresent()) {
 
-//		reader.setPaymentId(pid);fin
-			if(readerRepository.findByUsernameAndMyBooks(reader.getUsername(), bookid).isPresent())
-			{
 				return ResponseEntity.badRequest().body("Book already purchased");
+			} else {
+				int payId = (int) (Math.random() * 10000);
+				reader.setBooks(bookid);
+				reader.setPaymentid(payId);
+				readerRepository.save(reader);
+				return ResponseEntity.ok("Book purchased successfully, your paymentId is:" + payId);
 			}
-			else {
-				
-            payment.setBookid(bookid);
-            payment.setReaderemail(reader.getEmail());
-            payment.setReaderid(reader.getId());
-            payRepo.save(payment);
 
-			return ResponseEntity.ok("book purchased pid is:" +payment.getPaymentid());
 		}
-			
-		}
-		return ResponseEntity.badRequest().body("no book found to purchase");
+		return ResponseEntity.badRequest().body("No book found to purchase");
 
 	}
-
-
+	
+//	@PostMapping("/readers/{emailid}/books")
+//	ResponseEntity<?> getBookByPaymentId(@PathVariable("emailid") String emailid,@RequestParam(required=true) int paymentid){
+//		Optional<Reader> reader =readerRepository.findByEmailAndPaymentid(emailid, paymentid);
+//		if (reader.isPresent()) {
+//			return  ResponseEntity.ok(bookRepository.findById(reader.get().getBooks()));
+//		}
+//		return ResponseEntity.badRequest().body("Invalid Email / Payment ID");
+//	}
+//	
+//	
 	@PostMapping(path = "/reader/signup")
 	public ResponseEntity registerReader(@RequestBody Reader reader) {
 //		System.out.println("Registering... User ID : " + user.getUserName());
 
 		if (readerRepository.existsByUsername(reader.getUsername())) {
-			return ResponseEntity.badRequest().body(" Invalid Username!");
+			return ResponseEntity.badRequest().body(" Invalid Username");
 		}
 
 		if (readerRepository.existsByEmail(reader.getEmail())) {
 			return ResponseEntity.badRequest().body("Invalid Email");
 		}
 		String encodedPassword = 
-				  Base64.getEncoder().withoutPadding().encodeToString(reader.getPassword().getBytes());
+				  Base64.getEncoder().encodeToString(reader.getPassword().getBytes());
 		reader.setPassword(encodedPassword);
+       reader.setLoginstatus(true);
 		readerRepository.save(reader);
 		return ResponseEntity.ok(" Reader SignUp success"+reader.getId());
 
@@ -99,33 +100,45 @@ public class ReaderController extends BaseController{
 
 	@PostMapping("/reader/login")
 	public ResponseEntity<?> loginReader(@RequestBody Reader reader) throws Exception {
-		String tempEmailId = reader.getEmail();
-		String encodedPassword = 
-				  Base64.getEncoder().encodeToString(reader.getPassword().getBytes());
-		
-		reader.setPassword(encodedPassword);
-		
-		String tempPassword = reader.getPassword();
-		
-
-		Optional<Reader> readerObj = readerRepository.findByEmailAndPassword(tempEmailId, tempPassword);
-		if (readerObj.isPresent()) {
-			return ResponseEntity.ok(" reader Login success");
+		Optional<Reader> reader1 = readerRepository.findByUsername(reader.getUsername());
+		System.out.println(reader1.isPresent() + "testing");
+		if (reader1.isPresent() && reader1.get().getPassword()
+				.equals(Base64.getEncoder().encodeToString(reader.getPassword().getBytes()))) {
+			reader1.get().setLoginstatus(true);
+			readerRepository.save(reader1.get());
+			return ResponseEntity.ok("Reader Login Success" + reader1.get().getId());
 		}
-
-		return ResponseEntity.badRequest().body("Error: Invalid Credential");
+		return ResponseEntity.badRequest().body("Invalid Credential");
 	}
 
 	@GetMapping("/allbooks")
 	List<Book> getAllBooks() {
 		return bookRepository.findAll();
 	}
-
 	
 	
 	
 	
-
+	@PostMapping("/readers/{emailid}/books/refund")
+	ResponseEntity<?> getRefundBookByBookId(@PathVariable("emailid") String emailid,@RequestParam int bookid){
+		Optional<Reader> reader =readerRepository.findByEmailAndBooks(emailid,bookid);
+		if (reader.isPresent()) {
+			readerRepository.delete(reader.get());
+			return ResponseEntity.ok("Your refund will be credited shortly");
+		}
+		else {			
+			return new ResponseEntity<>("Invalid Email / BookId",HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping("/readers/{emailid}/books/{bookid}")
+	ResponseEntity<?> readBookContent(@PathVariable("emailid") String emailid,@PathVariable("bookid") int bookid){
+		Optional<Reader> reader =readerRepository.findByEmailAndBooks(emailid, bookid);
+		if (reader.isPresent()) {
+			return  ResponseEntity.ok(bookRepository.findById(reader.get().getBooks()));
+		}
+		return ResponseEntity.badRequest().body("Invalid Email / Book");
+	}
 	// reader should search books
 
 	@GetMapping("/books/search")
@@ -151,4 +164,5 @@ public class ReaderController extends BaseController{
 		return new ResponseEntity<>("NO Books Found", HttpStatus.NOT_FOUND);
 	}
 
+	
 }

@@ -14,6 +14,10 @@ const URL = "http://localhost:8085/digitalbooks/"
   providedIn: 'root'
 })
 export class ReaderService {
+  returnBook(book: any, readeremail: string) {
+    throw new Error('Method not implemented.');
+  }
+  thisdigitalBooksContainerFlag:boolean=true;
   digitalBooksContainerFlag: boolean=true;
   createbooknavFlag:boolean=false;
   createBookContainerFlag:boolean=false;
@@ -37,6 +41,7 @@ export class ReaderService {
     bookstatus:Boolean,
     content:String
   };
+  book1:any= JSON.parse(JSON.stringify(sessionStorage.getItem("buyingbook")));
   
  constructor(public http: HttpClient) {
 
@@ -47,7 +52,7 @@ export class ReaderService {
 
 
   buyBook(reader: any) {
-    return this.http.post(URL + "buy/book", reader);
+    return this.http.post(URL + "books/buy/"+this.book1, reader);
   }
 
   getMyBooksByReaderEmail(email:any) {
@@ -108,3 +113,7 @@ export class ReaderService {
     return this.http.post(URL+"author/"+authorid+"/signout",null);
   }
 }
+function bookId(bookId: any) {
+  throw new Error('Function not implemented.');
+}
+

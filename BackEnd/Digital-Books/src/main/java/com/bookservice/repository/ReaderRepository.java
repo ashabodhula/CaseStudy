@@ -8,7 +8,7 @@ import com.bookservice.model.Reader;
 
 public interface ReaderRepository  extends JpaRepository<Reader ,Integer>{
 
-	Optional<Reader> findByUsernameAndMyBooks(String username,int book) ;
+	Optional<Reader> findByUsernameAndBooks(String username,int bookid) ;
 
 	Optional<Reader> findByEmailAndPassword(String eMail, String password);
 
@@ -18,6 +18,21 @@ public interface ReaderRepository  extends JpaRepository<Reader ,Integer>{
 
 	Boolean existsByUsername(String username);
 
+	Optional<Reader> findByUsername(String username);
+
+	Optional<Reader> findByPaymentid(int paymentid);
+
+	
+
+	
+
+	Optional<Reader> findByEmailAndPaymentid(String emailid, int paymentid);
+
+	Optional<Reader> findByEmailAndBooks(String emailid, int bookid);
+
+	//Optional<Reader> findAllByReaderemail(String emailid);
+
+	
 	
 
 }

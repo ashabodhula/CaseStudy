@@ -20,7 +20,7 @@ public class Author {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	@NotBlank(message = "Author username  cannot be blank")
+	
 	private String username;
 	@Email(message = "Please Enter a Valid Email")
 	@NotBlank(message = "Author Email cannot be blank")

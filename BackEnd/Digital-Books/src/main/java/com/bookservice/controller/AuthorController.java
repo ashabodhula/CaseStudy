@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bookservice.model.Author;
@@ -70,27 +71,17 @@ public class AuthorController extends BaseController {
 
 	@PostMapping("/author/login")
 	public ResponseEntity<?> loginAuthor(@RequestBody Author author) throws Exception {
-		String tempEmailId = author.getEmail();
-		
-		String encodedPassword = 
-				  Base64.getEncoder().encodeToString(author.getPassword().getBytes());
-		
-		author.setPassword(encodedPassword);
-		String tempPassword = author.getPassword();
-		
-       
-		Optional<Author> authorObj = authorRepository.findByEmailAndPassword(tempEmailId, tempPassword);
-		if (authorObj.isPresent()) {
-			author.setLoginstatus(true);
-			authorRepository.save(author);
-			return ResponseEntity.ok("author login success"+author.getId());
+		Optional<Author> author1= authorRepository.findByUsername(author.getUsername());
+		System.out.println(author1.isPresent()+"testing");
+		if(author1.isPresent() && author1.get()
+				.getPassword().equals( Base64.getEncoder().encodeToString(author.getPassword().getBytes()))) {
+				author1.get().setLoginstatus(true);
+				authorRepository.save(author1.get());
+				return ResponseEntity.ok("Author Login Success"+author1.get().getId());
 		}
-
-		return ResponseEntity.badRequest().body(" Invalid Credential");
-	
+	return  ResponseEntity.badRequest().body("Invalid Credential");
 	}
-	
- //author should create book
+
 	
 	
 	@PostMapping("/author/{authorid}/books")
@@ -114,32 +105,28 @@ public class AuthorController extends BaseController {
 	}
 	//author edit the book
 	
-	@PutMapping("/author/{authorid}/books/{bookid}")
-	ResponseEntity<?> updateBook(@Valid @RequestBody Book book,
-			@PathVariable("authorid") int  authorid, 
-			@PathVariable("bookid") int  bookid){		
-		Optional<Author> author= authorRepository.findById(authorid);
-		if(bookRepository.existsById(bookid)) {
-			if(author.isPresent()) {
-				if(author.get().isLoginstatus()) {
+	@PutMapping("/author/{authorid}/books")
+	ResponseEntity<?> updateBook(@Valid @RequestBody Book book, @PathVariable("authorid") int authorid,	@RequestParam int  bookid){
+			
+		Optional<Author> author = authorRepository.findById(authorid);
+		if (bookRepository.existsById(bookid)) {
+			if (author.isPresent()) {
+				if (author.get().isLoginstatus()) {
 					book.setAuthorid(authorid);
-					
 					book.setId(bookid);
 					bookRepository.save(book);
-					return ResponseEntity.ok("Your book has been updated Successfull");
+					return ResponseEntity.ok("Your book has been updated Successfully");
+				} else {
+					return ResponseEntity.badRequest().body("If you are an  author ,Please Login");
 				}
-				else {
-					return ResponseEntity.badRequest().body("If you are an  author ,Please Login ");
-				}
-			}
-			else {
+			} else {
 				return ResponseEntity.badRequest().body("No Author Found");
 			}
 		}
-		return new ResponseEntity<>("No book found with given bookid ",HttpStatus.UNAUTHORIZED);
-		
+		return new ResponseEntity<>("No book found with given bookid", HttpStatus.UNAUTHORIZED);
+
 	}
-	
+
 	@GetMapping("/books/{authorid}")
 	List<Book> getBooksByAuthorId(@PathVariable("authorid") int authorid) {
 		return bookRepository.findAllByAuthorid(authorid);

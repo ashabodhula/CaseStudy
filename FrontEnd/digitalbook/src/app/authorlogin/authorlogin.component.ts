@@ -40,7 +40,7 @@ export class AuthorloginComponent implements OnInit {
     console.log('Clicked!');
     const c =this.readerService.loginAuthor(this.author);
     c.subscribe((response:any)=>{
-    
+    this.blankFields.username1=response.username1
     this.blankFields.email1=response.email;
     this.blankFields.password=response.password;
 

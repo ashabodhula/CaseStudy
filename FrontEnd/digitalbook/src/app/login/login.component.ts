@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
   loginflag: boolean=true;
   emailExists: any;
 
-  constructor( public readerService : ReaderService){ }
+  constructor( public readerService : ReaderService,public router:Router){ }
 
   loginReader(){
     console.log('Clicked!');
@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
     c.subscribe((response:any)=>{
     
     this.blankFields.email1=response.email;
+    this.blankFields.username1=response.username;
     this.blankFields.password=response.password;
 
    
@@ -64,6 +65,7 @@ export class LoginComponent implements OnInit {
       else{
         this.loginContainerFlag=false;
         this.successMessage=error.error.text;
+        this.router.navigate(["/readerbooks"]);
       }
     });
   }

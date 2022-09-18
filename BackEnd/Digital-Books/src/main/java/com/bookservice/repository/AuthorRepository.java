@@ -14,6 +14,7 @@ public interface AuthorRepository extends JpaRepository<Author , Integer> {
 	Optional<Author> findByEmailAndPassword(String eEmail, String password);
     Author findByEmail(String email);
     
+	Optional<Author> findByUsername(String username);
 	Boolean existsByUsername(String username);
 
 	Boolean existsByEmail(String eMail);

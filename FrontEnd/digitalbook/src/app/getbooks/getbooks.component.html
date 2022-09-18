@@ -1,12 +1,11 @@
+<p class="error-messages">{{nobookFoundMessage}}</p>
 <div *ngFor="let book of Books">
-  <div class="column"  >
-    <img src="assets/book{{book.id}}.jpg" alt="book image" width="220" height="220">
-    <div >
-    <h3 >{{book.title}}</h3>
-      <span>By  {{book.author}}</span>
-    </div>
-    <button  class="button " (click)="buyBook(book)">Buy Now @Rs.{{book.price}}</button>
-  </div> 
+<div class="column" >
+  <img src="assets/book{{book.id}}.jpg" alt="book image" width="200" height="200">
+  <div style="text-align: center;font-size: small;">
+  <h3 >{{book.title}}</h3>
+    <span >By  {{book.author}}</span>
+  </div>
+  <button  class="button " (click)="buyBook(book)">Buy Now @Rs.{{book.price}}</button>
+</div> 
 </div>
-
-
